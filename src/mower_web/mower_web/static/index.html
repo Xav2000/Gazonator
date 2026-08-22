@@ -14,194 +14,39 @@
             color: #e0e0e0;
             min-height: 100vh;
         }
-
-        .header {
-            background: #121212;
-            padding: 12px 20px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .header h1 {
-            font-size: 1.4rem;
-            color: #4caf50;
-            font-weight: 600;
-        }
-
-        .header-subtitle {
-            font-size: 0.85rem;
-            color: #888;
-            margin-top: 2px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 4px;
-            background: #1e1e1e;
-            padding: 8px;
-            border-bottom: 1px solid #333;
-        }
-
-        .nav-tabs button {
-            padding: 10px 20px;
-            background: #2a2a2a;
-            color: #aaa;
-            border: none;
-            border-radius: 6px 6px 0 0;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .nav-tabs button:hover {
-            background: #3a3a3a;
-            color: #fff;
-        }
-
-        .nav-tabs button.active {
-            background: #1e1e1e;
-            color: #4caf50;
-            font-weight: 600;
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-            height: calc(100vh - 140px);
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .map-frame {
-            width: 100%;
-            height: 100%;
-            background: #2a2a2a;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .sidebar {
-            display: flex;
-            height: 100%;
-            gap: 16px;
-        }
-
-        .sidebar-top, .sidebar-bottom {
-            width: 300px;
-            background: #1e1e1e;
-            padding: 16px;
-            border-radius: 8px;
-            overflow-y: auto;
-        }
-
-        .map-container {
-            flex: 1;
-            position: relative;
-        }
-
-        .card {
-            background: #2a2a2a;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid #333;
-        }
-
-        .card h3 {
-            color: #4caf50;
-            margin-bottom: 12px;
-            font-size: 1rem;
-        }
-
-        .card p {
-            margin: 6px 0;
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-
-        .card strong {
-            color: #fff;
-        }
-
+        .header { background: #121212; padding: 12px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .header h1 { font-size: 1.4rem; color: #4caf50; font-weight: 600; }
+        .header-subtitle { font-size: 0.85rem; color: #888; margin-top: 2px; }
+        .nav-tabs { display: flex; gap: 4px; background: #1e1e1e; padding: 8px; border-bottom: 1px solid #333; }
+        .nav-tabs button { padding: 10px 20px; background: #2a2a2a; color: #aaa; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        .nav-tabs button:hover { background: #3a3a3a; color: #fff; }
+        .nav-tabs button.active { background: #1e1e1e; color: #4caf50; font-weight: 600; }
+        .tab-content { display: none; padding: 20px; height: calc(100vh - 140px); }
+        .tab-content.active { display: block; }
+        .map-frame { width: 100%; height: 100%; background: #2a2a2a; border-radius: 8px; position: relative; }
+        .sidebar { display: flex; height: 100%; gap: 16px; }
+        .sidebar-top, .sidebar-bottom { width: 300px; background: #1e1e1e; padding: 16px; border-radius: 8px; overflow-y: auto; }
+        .map-container { flex: 1; position: relative; }
+        .card { background: #2a2a2a; padding: 16px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #333; }
+        .card h3 { color: #4caf50; margin-bottom: 12px; font-size: 1rem; }
+        .card p { margin: 6px 0; font-size: 0.9rem; color: #ccc; }
+        .card strong { color: #fff; }
         label { display: block; margin-top: 10px; font-size: 0.85rem; color: #aaa; }
         input, select { width: 100%; padding: 8px; margin-top: 4px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; }
-
-        #center-mower-btn {
-            margin-top: 10px;
-            width: 100%;
-            padding: 8px;
-            background: #2196f3;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        #center-mower-btn:hover {
-            background: #1976d2;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 6px;
-        }
-
+        #center-mower-btn { margin-top: 10px; width: 100%; padding: 8px; background: #2196f3; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        #center-mower-btn:hover { background: #1976d2; }
+        .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
         .status-connected { background: #4caf50; }
         .status-disconnected { background: #f44336; }
-
-        .btn {
-            padding: 8px 16px;
-            background: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-
+        .btn { padding: 8px 16px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-top: 8px; }
         .btn:hover { background: #45a049; }
         .btn-danger { background: #f44336; }
         .btn-danger:hover { background: #d32f2f; }
-
-        #joystick-container {
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .custom-robot-icon {
-            background: transparent;
-            border: none;
-        }
-
-        .custom-robot-icon div {
-            transition: all 0.3s ease;
-        }
-
-        .leaflet-container {
-            background: #2a2a2a;
-        }
-
-        .leaflet-control-attribution {
-            background: rgba(255, 255, 255, 0.7) !important;
-            color: #333 !important;
-        }
-
-        /* Scrollbar styling */
+        #joystick-container { width: 200px; height: 200px; margin: 20px auto; background: rgba(255,255,255,0.1); border-radius: 50%; position: relative; }
+        .custom-robot-icon { background: transparent; border: none; }
+        .custom-robot-icon div { transition: all 0.3s ease; }
+        .leaflet-container { background: #2a2a2a; }
+        .leaflet-control-attribution { background: rgba(255,255,255,0.7) !important; color: #333 !important; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #1e1e1e; }
         ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
@@ -210,23 +55,15 @@
 </head>
 <body>
     <div class="header">
-        <div>
-            <h1>🌱 Gazonator</h1>
-            <div class="header-subtitle">Tableau de bord - Tondeuse Autonome</div>
-        </div>
-        <div>
-            <span class="status-indicator status-connected"></span>
-            <span id="ros-status">Connecté à ROS 2</span>
-        </div>
+        <div><h1>🌱 Gazonator</h1><div class="header-subtitle">Tableau de bord - Tondeuse Autonome</div></div>
+        <div><span class="status-indicator status-connected"></span><span id="ros-status">Connecté à ROS 2</span></div>
     </div>
-
     <div class="nav-tabs">
         <button class="active" onclick="switchTab('tab1', event)">1. Pilotage</button>
         <button onclick="switchTab('tab2', event)">2. Mission</button>
         <button onclick="switchTab('tab3', event)">3. Tâches</button>
         <button onclick="switchTab('tab4', event)">4. Santé</button>
     </div>
-
     <!-- ONGLET 1 : Pilotage & Arpentage -->
     <div id="tab1" class="tab-content active">
         <div class="sidebar">
@@ -239,19 +76,15 @@
                     <p><strong>Statut:</strong> <span id="move-status">Arrêté</span></p>
                 </div>
             </div>
-            <div class="map-container">
-                <div id="map-drive" class="map-frame"></div>
-            </div>
+            <div class="map-container"><div id="map-drive" class="map-frame"></div></div>
         </div>
     </div>
-
     <!-- ONGLET 2 : Mission -->
     <div id="tab2" class="tab-content">
         <div id="map-mission" class="map-frame">
             <button id="center-mower-btn" onclick="centerMapOnMower()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; width: auto; padding: 8px 16px;">Centrer sur la tondeuse</button>
         </div>
     </div>
-
     <!-- ONGLET 3 : Tâches & Édition -->
     <div id="tab3" class="tab-content">
         <div class="sidebar">
@@ -259,26 +92,14 @@
                 <div class="card">
                     <h3>Paramètres de Tonte</h3>
                     <label>Mode de tonte</label>
-                    <select id="mow-mode">
-                        <option value="auto">Automatique</option>
-                        <option value="manual">Manuel</option>
-                        <option value="border">Bordure</option>
-                    </select>
-
+                    <select id="mow-mode"><option value="auto">Automatique</option><option value="manual">Manuel</option><option value="border">Bordure</option></select>
                     <label>Hauteur de coupe (cm)</label>
                     <input type="number" id="cut-height" value="5" min="1" max="10" />
-
                     <label>Vitesse de tonte</label>
-                    <select id="mow-speed">
-                        <option value="slow">Lente</option>
-                        <option value="medium" selected>Moyenne</option>
-                        <option value="fast">Rapide</option>
-                    </select>
-
+                    <select id="mow-speed"><option value="slow">Lente</option><option value="medium" selected>Moyenne</option><option value="fast">Rapide</option></select>
                     <button class="btn" onclick="startMowing()">Démarrer la tonte</button>
                     <button class="btn btn-danger" onclick="stopMowing()">Arrêter la tonte</button>
                 </div>
-
                 <div class="card">
                     <h3>Zones de Tonte</h3>
                     <button class="btn" onclick="startSurvey()">Démarrer l'arpentage</button>
@@ -286,12 +107,9 @@
                     <p><strong>Statut:</strong> <span id="survey-status">Inactif</span></p>
                 </div>
             </div>
-            <div class="map-container">
-                <div id="map-editor" class="map-frame"></div>
-            </div>
+            <div class="map-container"><div id="map-editor" class="map-frame"></div></div>
         </div>
     </div>
-
     <!-- ONGLET 4 : Santé -->
     <div id="tab4" class="tab-content">
         <div class="card">
@@ -301,294 +119,74 @@
             <p><strong>Mémoire:</strong> <span id="mem-usage">-</span>%</p>
             <p><strong>Espace disque:</strong> <span id="disk-usage">-</span>%</p>
         </div>
-
         <div class="card">
             <h3>ROS 2 & GPS Status</h3>
             <p><strong>Statut ROS 2:</strong> <span id="ros-status-2">-</span></p>
             <p><strong>GPS:</strong> <span id="gps-status">En attente de données...</span></p>
             <p><strong>Batterie:</strong> <span id="battery-level">-</span>%</p>
         </div>
-
         <div class="card">
             <h3>Dernières Actions</h3>
-            <div id="action-log" style="font-family: monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto; background: #121212; padding: 10px; border-radius: 4px;">
-                Système démarré...
-            </div>
+            <div id="action-log" style="font-family: monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto; background: #121212; padding: 10px; border-radius: 4px;">Système démarré...</div>
         </div>
     </div>
-
-    <!-- CDN JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
     <script src="https://unpkg.com/nipplejs@0.10.1/dist/nipplejs.min.js"></script>
-
     <script>
-        // Tab switching
         function switchTab(tabId, event) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
         }
-
-        // CARTES & GEOMAN
         const mapOptions = { maxZoom: 22, maxNativeZoom: 19 };
         const orthoUrl = 'https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}';
-
         const mapDrive = L.map('map-drive', mapOptions).setView([48.8584, 2.2945], 19);
         const mapMission = L.map('map-mission', mapOptions).setView([48.8584, 2.2945], 19);
         const mapEditor = L.map('map-editor', mapOptions).setView([48.8584, 2.2945], 19);
-
         L.tileLayer(orthoUrl, { attribution: 'IGN France' }).addTo(mapDrive);
         L.tileLayer(orthoUrl, { attribution: 'IGN France' }).addTo(mapMission);
         L.tileLayer(orthoUrl, { attribution: 'IGN France' }).addTo(mapEditor);
-
-        // Geoman for editing
         mapEditor.pm.setLang('fr');
-        mapEditor.on('pm:create', (e) => {
-            const layer = e.layer;
-            const type = e.shape;
-            addFeatureToCollection(`Tracé manuel (${type})`, layer, 'manual');
-        });
-
-        // PERSISTANCE GEOJSON
+        mapEditor.on('pm:create', (e) => { const layer = e.layer; const type = e.shape; addFeatureToCollection('Tracé manuel (' + type + ')', layer, 'manual'); });
         let geojsonCollection = { type: "FeatureCollection", features: [] };
         let zoneLayersMap = {};
-
         function addFeatureToCollection(name, layer, category) {
-            const feature = {
-                type: 'Feature',
-                geometry: layer.toGeoJSON().geometry,
-                properties: { name: name, category: category, timestamp: new Date().toISOString() }
-            };
-            geojsonCollection.features.push(feature);
-            saveZonesToServer();
+            const feature = { type: 'Feature', geometry: layer.toGeoJSON().geometry, properties: { name: name, category: category, timestamp: new Date().toISOString() } };
+            geojsonCollection.features.push(feature); saveZonesToServer();
         }
-
-        function saveZonesToServer() {
-            localStorage.setItem('geojsonCollection', JSON.stringify(geojsonCollection));
-            renderZonesOnMap();
-        }
-
-        function loadZonesFromServer() {
-            const saved = localStorage.getItem('geojsonCollection');
-            if (saved) {
-                geojsonCollection = JSON.parse(saved);
-                renderZonesOnMap();
-            }
-        }
-
-        function renderZonesOnMap() {
-            Object.values(zoneLayersMap).forEach(layer => mapEditor.removeLayer(layer));
-            zoneLayersMap = {};
-
-            geojsonCollection.features.forEach((feature, index) => {
-                const layer = L.geoJSON(feature, {
-                    style: () => ({
-                        color: feature.properties.category === 'manual' ? '#2196f3' : '#4caf50',
-                        weight: 2,
-                        opacity: 0.8,
-                        fillOpacity: 0.2
-                    })
-                }).addTo(mapEditor);
-                zoneLayersMap[`zone-${index}`] = layer;
-            });
-        }
-
-        // GÉNÉRATION ET AFFICHAGE DES LIGNES DE TONTE
+        function saveZonesToServer() { localStorage.setItem('geojsonCollection', JSON.stringify(geojsonCollection)); renderZonesOnMap(); }
+        function loadZonesFromServer() { const saved = localStorage.getItem('geojsonCollection'); if (saved) { geojsonCollection = JSON.parse(saved); renderZonesOnMap(); } }
+        function renderZonesOnMap() { Object.values(zoneLayersMap).forEach(layer => mapEditor.removeLayer(layer)); zoneLayersMap = {}; geojsonCollection.features.forEach((feature, index) => { const layer = L.geoJSON(feature, { style: () => ({ color: feature.properties.category === 'manual' ? '#2196f3' : '#4caf50', weight: 2, opacity: 0.8, fillOpacity: 0.2 }) }).addTo(mapEditor); zoneLayersMap['zone-' + index] = layer; }); }
         let pathLayerGroup = L.layerGroup().addTo(mapEditor);
-
-        async function triggerPathGeneration() {
-            const zones = geojsonCollection.features.filter(f => f.properties.category === 'zone');
-            if (zones.length === 0) return;
-
-            const center = zones[0].geometry.coordinates[0][0];
-            const spiralPoints = [];
-            const steps = 50;
-            const radius = 5;
-
-            for (let i = 0; i <= steps; i++) {
-                const angle = i * 0.2;
-                const dist = (i / steps) * radius * 2;
-                spiralPoints.push([
-                    center[1] + dist * Math.cos(angle) * 0.0001,
-                    center[0] + dist * Math.sin(angle) * 0.0001
-                ]);
-            }
-
-            pathLayerGroup.clearLayers();
-            L.polyline(spiralPoints, { color: '#ffc107', weight: 3, opacity: 0.8 }).addTo(pathLayerGroup);
-        }
-
-        // STATE ARPENTAGE
-        let isSurveying = false;
-        let isPaused = false;
-        let surveyMode = '';
-        let surveyPoints = [];
-        let currentPolyline = L.polyline([], { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(mapEditor);
-
-        function startSurvey() {
-            isSurveying = true;
-            isPaused = false;
-            surveyPoints = [];
-            currentPolyline.setLatLngs([]);
-            document.getElementById('survey-status').innerText = 'Arpentage en cours...';
-            document.getElementById('survey-status').style.color = '#4caf50';
-        }
-
-        function stopSurvey() {
-            isSurveying = false;
-            isPaused = false;
-            document.getElementById('survey-status').innerText = 'Arpentage terminé';
-            document.getElementById('survey-status').style.color = '#888';
-        }
-
-        function pauseSurvey() {
-            isPaused = true;
-            document.getElementById('survey-status').innerText = 'Arpentage en pause';
-            document.getElementById('survey-status').style.color = '#ffc107';
-        }
-
-        function resumeSurvey() {
-            isPaused = false;
-            document.getElementById('survey-status').innerText = 'Arpentage en cours...';
-            document.getElementById('survey-status').style.color = '#4caf50';
-        }
-
-        // SYSTEM METRICS & ROS 2
-        async function updateSystemMetrics() {
-            try {
-                const res = await fetch('/api/system');
-                const data = await res.json();
-                document.getElementById('cpu-temp').innerText = data.cpu_temp || '-';
-                document.getElementById('cpu-usage').innerText = data.cpu_usage || '-';
-                document.getElementById('mem-usage').innerText = data.mem_usage || '-';
-                document.getElementById('disk-usage').innerText = data.disk_usage || '-';
-                document.getElementById('battery-level').innerText = data.battery || '-';
-            } catch (e) {
-                console.log('System metrics unavailable');
-            }
-        }
+        async function triggerPathGeneration() { const zones = geojsonCollection.features.filter(f => f.properties.category === 'zone'); if (zones.length === 0) return; const center = zones[0].geometry.coordinates[0][0]; const spiralPoints = []; const steps = 50; const radius = 5; for (let i = 0; i <= steps; i++) { const angle = i * 0.2; const dist = (i / steps) * radius * 2; spiralPoints.push([center[1] + dist * Math.cos(angle) * 0.0001, center[0] + dist * Math.sin(angle) * 0.0001]); } pathLayerGroup.clearLayers(); L.polyline(spiralPoints, { color: '#ffc107', weight: 3, opacity: 0.8 }).addTo(pathLayerGroup); }
+        let isSurveying = false; let isPaused = false; let surveyMode = ''; let surveyPoints = []; let currentPolyline = L.polyline([], { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(mapEditor);
+        function startSurvey() { isSurveying = true; isPaused = false; surveyPoints = []; currentPolyline.setLatLngs([]); document.getElementById('survey-status').innerText = 'Arpentage en cours...'; document.getElementById('survey-status').style.color = '#4caf50'; }
+        function stopSurvey() { isSurveying = false; isPaused = false; document.getElementById('survey-status').innerText = 'Arpentage terminé'; document.getElementById('survey-status').style.color = '#888'; }
+        function pauseSurvey() { isPaused = true; document.getElementById('survey-status').innerText = 'Arpentage en pause'; document.getElementById('survey-status').style.color = '#ffc107'; }
+        function resumeSurvey() { isPaused = false; document.getElementById('survey-status').innerText = 'Arpentage en cours...'; document.getElementById('survey-status').style.color = '#4caf50'; }
+        async function updateSystemMetrics() { try { const res = await fetch('/api/system'); const data = await res.json(); document.getElementById('cpu-temp').innerText = data.cpu_temp || '-'; document.getElementById('cpu-usage').innerText = data.cpu_usage || '-'; document.getElementById('mem-usage').innerText = data.mem_usage || '-'; document.getElementById('disk-usage').innerText = data.disk_usage || '-'; document.getElementById('battery-level').innerText = data.battery || '-'; } catch (e) { console.log('System metrics unavailable'); } }
         setInterval(updateSystemMetrics, 2000);
-
         const ros = new ROSLIB.Ros({ url: 'ws://' + window.location.hostname + ':9090' });
         ros.on('connection', () => { document.getElementById('ros-status').innerText = 'Connecté'; document.getElementById('ros-status').style.color = '#4caf50'; });
         ros.on('error', () => { document.getElementById('ros-status').innerText = 'Erreur'; document.getElementById('ros-status').style.color = 'red'; });
         ros.on('close', () => { document.getElementById('ros-status').innerText = 'Déconnecté'; document.getElementById('ros-status').style.color = 'red'; });
-
-        // Cmd_vel
         const cmdVelTopic = new ROSLIB.Topic({ ros: ros, name: '/cmd_vel', messageType: 'geometry_msgs/msg/Twist' });
         let linearVel = 0, angularVel = 0, moveTimer = null;
-
-        function publishCmdVel() {
-            const twist = new ROSLIB.Message({
-                linear: { x: linearVel, y: 0, z: 0 },
-                angular: { x: 0, y: 0, z: angularVel }
-            });
-            cmdVelTopic.publish(twist);
-            document.getElementById('linear-vel').innerText = linearVel.toFixed(2);
-            document.getElementById('angular-vel').innerText = angularVel.toFixed(2);
-        }
-
-        function stopMove() {
-            linearVel = 0; angularVel = 0; publishCmdVel();
-            document.getElementById('move-status').innerText = 'Arrêté';
-            if (moveTimer) clearInterval(moveTimer);
-            moveTimer = null;
-        }
-
+        function publishCmdVel() { const twist = new ROSLIB.Message({ linear: { x: linearVel, y: 0, z: 0 }, angular: { x: 0, y: 0, z: angularVel } }); cmdVelTopic.publish(twist); document.getElementById('linear-vel').innerText = linearVel.toFixed(2); document.getElementById('angular-vel').innerText = angularVel.toFixed(2); }
+        function stopMove() { linearVel = 0; angularVel = 0; publishCmdVel(); document.getElementById('move-status').innerText = 'Arrêté'; if (moveTimer) clearInterval(moveTimer); moveTimer = null; }
         const joystick = nipplejs.create({ zone: document.getElementById('joystick-container'), mode: 'static', position: { left: '50%', top: '50%' }, color: '#4caf50', size: 110 });
-        joystick.on('move', (evt, data) => {
-            if (data.distance > 10) {
-                linearVel = data.vector.y * 0.4; angularVel = -data.vector.x * 0.8;
-                if (!moveTimer) moveTimer = setInterval(publishCmdVel, 100);
-            } else { linearVel = 0; angularVel = 0; }
-        });
+        joystick.on('move', (evt, data) => { if (data.distance > 10) { linearVel = data.vector.y * 0.4; angularVel = -data.vector.x * 0.8; if (!moveTimer) moveTimer = setInterval(publishCmdVel, 100); } else { linearVel = 0; angularVel = 0; } });
         joystick.on('end', () => stopMove());
-
-        // GPS + Tracé Arpentage
-        const robotMarkerStyle = L.divIcon({
-            className: 'custom-robot-icon',
-            html: '<div style="background-color: #4caf50; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 8px #4caf50;"></div>',
-        });
-
-        let markerMission = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapMission);
-        let markerEditor = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapEditor);
-        let firstGpsFix = true;
-        
-        let positionHistory = [];
-        let pathLayer = L.layerGroup().addTo(mapMission);
-
+        function getRobotIcon(status) { let color, shadow; switch (status) { case -1: color = '#f44336'; shadow = '0 0 8px #f44336'; break; case 0: color = '#ffc107'; shadow = '0 0 8px #ffc107'; break; case 1: color = '#2196f3'; shadow = '0 0 8px #2196f3'; break; default: color = '#4caf50'; shadow = '0 0 8px #4caf50'; break; } return L.divIcon({ className: 'custom-robot-icon', html: '<div style="background-color: ' + color + '; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: ' + shadow + ';"></div>' }); }
+        let markerMission = L.marker([0, 0], { icon: getRobotIcon(-1) }).addTo(mapMission);
+        let markerEditor = L.marker([0, 0], { icon: getRobotIcon(-1) }).addTo(mapEditor);
+        let firstGpsFix = true; let positionHistory = []; let pathLayer = L.layerGroup().addTo(mapMission);
         const gpsTopic = new ROSLIB.Topic({ ros: ros, name: '/fix', messageType: 'sensor_msgs/msg/NavSatFix' });
-        
-        gpsTopic.subscribe((msg) => {
-            const lat = msg.latitude;
-            const lon = msg.longitude;
-            const accuracy = msg.position_covariance ? Math.sqrt(msg.position_covariance[0] + msg.position_covariance[4]) : 0;
-            const status = msg.status ? msg.status.status : -1;
-
-            if (lat && lon && !isNaN(lat) && !isNaN(lon) && lat !== 0) {
-                const newPos = [lat, lon];
-                
-                // Mettre à jour l'icône avec la couleur selon la qualité
-                let color, shadowColor;
-                if (status === -1) {
-                    color = '#f44336'; shadowColor = '#f44336';
-                } else if (status === 0) {
-                    color = '#ffc107'; shadowColor = '#ffc107';
-                } else if (status === 1) {
-                    color = '#2196f3'; shadowColor = '#2196f3';
-                } else if (status >= 2) {
-                    color = '#4caf50'; shadowColor = '#4caf50';
-                } else {
-                    color = '#888888'; shadowColor = '#888888';
-                }
-                
-                const newIcon = L.divIcon({
-                    className: 'custom-robot-icon',
-                    html: '<div style="background-color: ' + color + '; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 8px ' + shadowColor + ';"></div>'
-                });
-                markerMission.setIcon(newIcon);
-                markerEditor.setIcon(newIcon);
-
-                markerMission.setLatLng(newPos);
-                markerEditor.setLatLng(newPos);
-
-                const gpsStatusEl = document.getElementById('gps-status');
-                if (gpsStatusEl) {
-                    gpsStatusEl.innerText = 'Fix OK (' + lat.toFixed(6) + ', ' + lon.toFixed(6) + ')';
-                    gpsStatusEl.style.color = '#4caf50';
-                }
-
-                if (firstGpsFix) {
-                    mapMission.setView(newPos, 19);
-                    mapEditor.setView(newPos, 19);
-                    firstGpsFix = false;
-                }
-
-                positionHistory.push(newPos);
-                if (positionHistory.length > 1) {
-                    pathLayer.clearLayers();
-                    L.polyline(positionHistory, { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(pathLayer);
-                }
-
-                if (isSurveying && !isPaused) {
-                    const lastPt = surveyPoints[surveyPoints.length - 1];
-                    if (!lastPt || mapEditor.distance(lastPt, newPos) > 0.3) {
-                        surveyPoints.push(newPos);
-                        currentPolyline.setLatLngs(surveyPoints);
-                    }
-                }
-            }
-        });
-
-        function centerMapOnMower() {
-            if (markerMission.getLatLng()) {
-                mapMission.setView(markerMission.getLatLng(), 19);
-            }
-        }
-
+        gpsTopic.subscribe((msg) => { const lat = msg.latitude; const lon = msg.longitude; const accuracy = msg.position_covariance ? Math.sqrt(msg.position_covariance[0] + msg.position_covariance[4]) : 0; const status = msg.status ? msg.status.status : -1; if (lat && lon && !isNaN(lat) && !isNaN(lon) && lat !== 0) { const newPos = [lat, lon]; markerMission.setLatLng(newPos); markerEditor.setLatLng(newPos); markerMission.setIcon(getRobotIcon(status)); markerEditor.setIcon(getRobotIcon(status)); const gpsStatusEl = document.getElementById('gps-status'); if (gpsStatusEl) { gpsStatusEl.innerText = 'Fix OK (' + lat.toFixed(6) + ', ' + lon.toFixed(6) + ')'; gpsStatusEl.style.color = '#4caf50'; } if (firstGpsFix) { mapMission.setView(newPos, 19); mapEditor.setView(newPos, 19); firstGpsFix = false; } positionHistory.push(newPos); if (positionHistory.length > 1) { pathLayer.clearLayers(); L.polyline(positionHistory, { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(pathLayer); } if (isSurveying && !isPaused) { const lastPt = surveyPoints[surveyPoints.length - 1]; if (!lastPt || mapEditor.distance(lastPt, newPos) > 0.3) { surveyPoints.push(newPos); currentPolyline.setLatLngs(surveyPoints); } } } });
+        function centerMapOnMower() { if (markerMission.getLatLng()) { mapMission.setView(markerMission.getLatLng(), 19); } }
         loadZonesFromServer();
     </script>
 </body>
