@@ -512,7 +512,7 @@
         let positionHistory = [];
         let pathLayer = L.layerGroup().addTo(mapMission);
 
-        const gpsTopic = new ROSLIB.Topic({ ros: ros, name: '/gps/fix', messageType: 'sensor_msgs/msg/NavSatFix' });
+        const gpsTopic = new ROSLIB.Topic({ ros: ros, name: '/fix', messageType: 'sensor_msgs/msg/NavSatFix' });
         
         gpsTopic.subscribe((msg) => {
             const lat = msg.latitude;
