@@ -130,24 +130,23 @@
 
         label { display: block; margin-top: 10px; font-size: 0.85rem; color: #aaa; }
         input, select { width: 100%; padding: 8px; margin-top: 4px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        
 
-#center-mower-btn {
-    margin-top: 10px;
-    width: 100%;
-    padding: 8px;
-    background: #2196f3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
+        #center-mower-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
 
-#center-mower-btn:hover {
-    background: #1976d2;
-}
+        #center-mower-btn:hover {
+            background: #1976d2;
+        }
 
         .status-indicator {
             display: inline-block;
@@ -228,6 +227,7 @@
         <button onclick="switchTab('tab4', event)">4. Santé</button>
     </div>
 
+    <!-- ONGLET 1 : Pilotage & Arpentage -->
     <div id="tab1" class="tab-content active">
         <div class="sidebar">
             <div class="sidebar-top">
@@ -245,12 +245,14 @@
         </div>
     </div>
 
+    <!-- ONGLET 2 : Mission -->
     <div id="tab2" class="tab-content">
         <div id="map-mission" class="map-frame">
             <button id="center-mower-btn" onclick="centerMapOnMower()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; width: auto; padding: 8px 16px;">Centrer sur la tondeuse</button>
         </div>
     </div>
 
+    <!-- ONGLET 3 : Tâches & Édition -->
     <div id="tab3" class="tab-content">
         <div class="sidebar">
             <div class="sidebar-top">
@@ -290,6 +292,7 @@
         </div>
     </div>
 
+    <!-- ONGLET 4 : Santé -->
     <div id="tab4" class="tab-content">
         <div class="card">
             <h3>Raspberry Pi</h3>
@@ -314,6 +317,7 @@
         </div>
     </div>
 
+    <!-- CDN JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
@@ -328,7 +332,7 @@
             event.target.classList.add('active');
         }
 
-        // Initialize maps
+        // CARTES & GEOMAN
         const mapOptions = { maxZoom: 22, maxNativeZoom: 19 };
         const orthoUrl = 'https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}';
 
@@ -345,10 +349,10 @@
         mapEditor.on('pm:create', (e) => {
             const layer = e.layer;
             const type = e.shape;
-            addFeatureToCollection('Tracé manuel (' + type + ')', layer, 'manual');
+            addFeatureToCollection(`Tracé manuel (${type})`, layer, 'manual');
         });
 
-        // Persistence
+        // PERSISTANCE GEOJSON
         let geojsonCollection = { type: "FeatureCollection", features: [] };
         let zoneLayersMap = {};
 
@@ -388,18 +392,17 @@
                         fillOpacity: 0.2
                     })
                 }).addTo(mapEditor);
-                zoneLayersMap['zone-' + index] = layer;
+                zoneLayersMap[`zone-${index}`] = layer;
             });
         }
 
-        // Path generation
+        // GÉNÉRATION ET AFFICHAGE DES LIGNES DE TONTE
         let pathLayerGroup = L.layerGroup().addTo(mapEditor);
 
         async function triggerPathGeneration() {
             const zones = geojsonCollection.features.filter(f => f.properties.category === 'zone');
             if (zones.length === 0) return;
 
-            // Simple spiral pattern for demo
             const center = zones[0].geometry.coordinates[0][0];
             const spiralPoints = [];
             const steps = 50;
@@ -418,7 +421,7 @@
             L.polyline(spiralPoints, { color: '#ffc107', weight: 3, opacity: 0.8 }).addTo(pathLayerGroup);
         }
 
-        // Survey state
+        // STATE ARPENTAGE
         let isSurveying = false;
         let isPaused = false;
         let surveyMode = '';
@@ -453,22 +456,7 @@
             document.getElementById('survey-status').style.color = '#4caf50';
         }
 
-        // Mowing
-        function startMowing() {
-            logAction('Démarrage de la tonte');
-        }
-
-        function stopMowing() {
-            logAction('Arrêt de la tonte');
-        }
-
-        function logAction(message) {
-            const logDiv = document.getElementById('action-log');
-            const timestamp = new Date().toLocaleTimeString();
-            logDiv.innerHTML = '[' + timestamp + '] ' + message + '<br>' + logDiv.innerHTML;
-        }
-
-        // System metrics
+        // SYSTEM METRICS & ROS 2
         async function updateSystemMetrics() {
             try {
                 const res = await fetch('/api/system');
@@ -484,23 +472,10 @@
         }
         setInterval(updateSystemMetrics, 2000);
 
-        // ROS 2 connection
         const ros = new ROSLIB.Ros({ url: 'ws://' + window.location.hostname + ':9090' });
-        ros.on('connection', () => { 
-            document.getElementById('ros-status').innerText = 'Connecté'; 
-            document.getElementById('ros-status').style.color = '#4caf50'; 
-            document.getElementById('ros-status-2').innerText = 'Connecté';
-        });
-        ros.on('error', () => { 
-            document.getElementById('ros-status').innerText = 'Erreur'; 
-            document.getElementById('ros-status').style.color = 'red'; 
-            document.getElementById('ros-status-2').innerText = 'Erreur';
-        });
-        ros.on('close', () => { 
-            document.getElementById('ros-status').innerText = 'Déconnecté'; 
-            document.getElementById('ros-status').style.color = 'red'; 
-            document.getElementById('ros-status-2').innerText = 'Déconnecté';
-        });
+        ros.on('connection', () => { document.getElementById('ros-status').innerText = 'Connecté'; document.getElementById('ros-status').style.color = '#4caf50'; });
+        ros.on('error', () => { document.getElementById('ros-status').innerText = 'Erreur'; document.getElementById('ros-status').style.color = 'red'; });
+        ros.on('close', () => { document.getElementById('ros-status').innerText = 'Déconnecté'; document.getElementById('ros-status').style.color = 'red'; });
 
         // Cmd_vel
         const cmdVelTopic = new ROSLIB.Topic({ ros: ros, name: '/cmd_vel', messageType: 'geometry_msgs/msg/Twist' });
@@ -523,44 +498,21 @@
             moveTimer = null;
         }
 
-        const joystick = nipplejs.create({ 
-            zone: document.getElementById('joystick-container'), 
-            mode: 'static', 
-            position: { left: '50%', top: '50%' }, 
-            color: '#4caf50', 
-            size: 110 
-        });
+        const joystick = nipplejs.create({ zone: document.getElementById('joystick-container'), mode: 'static', position: { left: '50%', top: '50%' }, color: '#4caf50', size: 110 });
         joystick.on('move', (evt, data) => {
             if (data.distance > 10) {
-                linearVel = data.vector.y * 0.4; 
-                angularVel = -data.vector.x * 0.8;
+                linearVel = data.vector.y * 0.4; angularVel = -data.vector.x * 0.8;
                 if (!moveTimer) moveTimer = setInterval(publishCmdVel, 100);
-                document.getElementById('move-status').innerText = 'En mouvement';
             } else { linearVel = 0; angularVel = 0; }
         });
         joystick.on('end', () => stopMove());
 
-        // Fonction pour créer une icône avec couleur selon la qualité GPS
-        function getRobotIcon(status) {
-            let color, shadowColor;
-            if (status === -1) {
-                color = '#f44336'; shadowColor = '#f44336';
-            } else if (status === 0) {
-                color = '#ffc107'; shadowColor = '#ffc107';
-            } else if (status === 1) {
-                color = '#2196f3'; shadowColor = '#2196f3';
-            } else if (status >= 2) {
-                color = '#4caf50'; shadowColor = '#4caf50';
-            } else {
-                color = '#888888'; shadowColor = '#888888';
-            }
-            return L.divIcon({
-                className: 'custom-robot-icon',
-                html: '<div style="background-color: ' + color + '; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 8px ' + shadowColor + ';"></div>'
-            });
-        }
+        // GPS + Tracé Arpentage
+        const robotMarkerStyle = L.divIcon({
+            className: 'custom-robot-icon',
+            html: '<div style="background-color: #4caf50; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 8px #4caf50;"></div>',
+        });
 
-        let robotMarkerStyle = getRobotIcon(2);
         let markerMission = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapMission);
         let markerEditor = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapEditor);
         let firstGpsFix = true;
@@ -579,9 +531,26 @@
             if (lat && lon && !isNaN(lat) && !isNaN(lon) && lat !== 0) {
                 const newPos = [lat, lon];
                 
-                robotMarkerStyle = getRobotIcon(status);
-                markerMission.setIcon(robotMarkerStyle);
-                markerEditor.setIcon(robotMarkerStyle);
+                // Mettre à jour l'icône avec la couleur selon la qualité
+                let color, shadowColor;
+                if (status === -1) {
+                    color = '#f44336'; shadowColor = '#f44336';
+                } else if (status === 0) {
+                    color = '#ffc107'; shadowColor = '#ffc107';
+                } else if (status === 1) {
+                    color = '#2196f3'; shadowColor = '#2196f3';
+                } else if (status >= 2) {
+                    color = '#4caf50'; shadowColor = '#4caf50';
+                } else {
+                    color = '#888888'; shadowColor = '#888888';
+                }
+                
+                const newIcon = L.divIcon({
+                    className: 'custom-robot-icon',
+                    html: '<div style="background-color: ' + color + '; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 8px ' + shadowColor + ';"></div>'
+                });
+                markerMission.setIcon(newIcon);
+                markerEditor.setIcon(newIcon);
 
                 markerMission.setLatLng(newPos);
                 markerEditor.setLatLng(newPos);
