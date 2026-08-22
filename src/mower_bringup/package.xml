@@ -2,12 +2,17 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>mower_bringup</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="xav2000@todo.todo">xav2000</maintainer>
-  <license>TODO: License declaration</license>
+  <version>1.0.0</version>
+  <description>Launch files and configuration for the autonomous mower (EKF, GPS, navigation)</description>
+  <maintainer email="xavier.rossignol@free.fr">Xavier Rossignol</maintainer>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>robot_localization</depend>
+  <depend>nav2_msgs</depend>
+  <depend>geographic_msgs</depend>
+  <depend>rclpy</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
