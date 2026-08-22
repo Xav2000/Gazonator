@@ -1,1 +1,0 @@
-/home/xav2000/mower_ws/src/mower_hardware/mower_hardware/motor_driver_node.py
