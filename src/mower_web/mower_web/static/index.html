@@ -345,7 +345,7 @@
         mapEditor.on('pm:create', (e) => {
             const layer = e.layer;
             const type = e.shape;
-            addFeatureToCollection(`Tracé manuel (${type})`, layer, 'manual');
+            addFeatureToCollection('Tracé manuel (' + type + ')', layer, 'manual');
         });
 
         // Persistence
@@ -388,7 +388,7 @@
                         fillOpacity: 0.2
                     })
                 }).addTo(mapEditor);
-                zoneLayersMap[`zone-${index}`] = layer;
+                zoneLayersMap['zone-' + index] = layer;
             });
         }
 
@@ -465,7 +465,7 @@
         function logAction(message) {
             const logDiv = document.getElementById('action-log');
             const timestamp = new Date().toLocaleTimeString();
-            logDiv.innerHTML = `[${timestamp}] ${message}<br>` + logDiv.innerHTML;
+            logDiv.innerHTML = '[' + timestamp + '] ' + message + '<br>' + logDiv.innerHTML;
         }
 
         // System metrics
@@ -544,16 +544,12 @@
         function getRobotIcon(status) {
             let color, shadowColor;
             if (status === -1) {
-                // AUCUN/FAIBLE
                 color = '#f44336'; shadowColor = '#f44336';
             } else if (status === 0) {
-                // FLOTTANT
                 color = '#ffc107'; shadowColor = '#ffc107';
             } else if (status === 1) {
-                // FIXE
                 color = '#2196f3'; shadowColor = '#2196f3';
             } else if (status >= 2) {
-                // RTK
                 color = '#4caf50'; shadowColor = '#4caf50';
             } else {
                 color = '#888888'; shadowColor = '#888888';
@@ -564,7 +560,6 @@
             });
         }
 
-        // Initialisation avec couleur par défaut (RTK = vert)
         let robotMarkerStyle = getRobotIcon(2);
         let markerMission = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapMission);
         let markerEditor = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapEditor);
@@ -573,7 +568,6 @@
         let positionHistory = [];
         let pathLayer = L.layerGroup().addTo(mapMission);
 
-        // Topic ROS2 corrigé : /fix (sans /gps/ devant)
         const gpsTopic = new ROSLIB.Topic({ ros: ros, name: '/fix', messageType: 'sensor_msgs/msg/NavSatFix' });
         
         gpsTopic.subscribe((msg) => {
@@ -585,7 +579,6 @@
             if (lat && lon && !isNaN(lat) && !isNaN(lon) && lat !== 0) {
                 const newPos = [lat, lon];
                 
-                // Mettre à jour l'icône avec la couleur selon la qualité
                 robotMarkerStyle = getRobotIcon(status);
                 markerMission.setIcon(robotMarkerStyle);
                 markerEditor.setIcon(robotMarkerStyle);
@@ -595,7 +588,7 @@
 
                 const gpsStatusEl = document.getElementById('gps-status');
                 if (gpsStatusEl) {
-                    gpsStatusEl.innerText = 'Fix OK (' + lat.toFixed(6) + ', ' + lon.toFixed(6) + ')];
+                    gpsStatusEl.innerText = 'Fix OK (' + lat.toFixed(6) + ', ' + lon.toFixed(6) + ')';
                     gpsStatusEl.style.color = '#4caf50';
                 }
 
