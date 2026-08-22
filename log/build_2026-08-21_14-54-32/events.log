@@ -1,4 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000699] (-) JobUnselected: {'identifier': 'mower_bringup'}
-[0.000950] (-) JobUnselected: {'identifier': 'mower_hardware'}
-[0.001622] (-) EventReactorShutdown: {}

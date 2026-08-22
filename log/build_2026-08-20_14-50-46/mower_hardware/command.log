@@ -1,4 +1,0 @@
-Invoking command in '/home/xav2000/mower_ws/build/mower_hardware': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/xav2000/mower_ws/build/mower_hardware -- -j4 -l4
-Invoked command in '/home/xav2000/mower_ws/build/mower_hardware' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/xav2000/mower_ws/build/mower_hardware -- -j4 -l4
-Invoking command in '/home/xav2000/mower_ws/build/mower_hardware': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/xav2000/mower_ws/build/mower_hardware
-Invoked command in '/home/xav2000/mower_ws/build/mower_hardware' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/xav2000/mower_ws/build/mower_hardware
