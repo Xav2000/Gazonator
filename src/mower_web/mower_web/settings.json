@@ -1,0 +1,11 @@
+{
+  "mower": {
+    "max_speed": 1.0,
+    "default_height": 5,
+    "battery_threshold": 20
+  },
+  "ros": {
+    "master_uri": "http://localhost:11311",
+    "auto_reconnect": true
+  }
+}
