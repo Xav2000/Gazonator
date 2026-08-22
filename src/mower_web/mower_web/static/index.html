@@ -48,6 +48,60 @@
 
         label { display: block; margin-top: 10px; font-size: 0.85rem; color: #aaa; }
         input, select { width: 100%; padding: 8px; margin-top: 4px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        
+        .gps-info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            width: 250px;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4caf50;
+            color: #fff;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .gps-info-panel .card {
+            background: transparent;
+            padding: 8px;
+            border: none;
+            box-shadow: none;
+        }
+        
+        .gps-info-panel .card h3 {
+            color: #4caf50;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .gps-info-panel p {
+            margin: 4px 0;
+            font-size: 0.85rem;
+        }
+        
+        .gps-info-panel strong {
+            color: #4caf50;
+        }
+        
+        #center-mower-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        #center-mower-btn:hover {
+            background: #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +113,6 @@
         <button onclick="switchTab('tab4', event)">4. Santé</button>
     </nav>
 
-    <!-- ONGLET 1 : Pilotage & Arpentage -->
     <div id="tab1" class="tab-content active">
         <div class="video-placeholder">Flux Vidéo Caméra (À venir)</div>
         
@@ -97,12 +150,21 @@
         </div>
     </div>
 
-    <!-- ONGLET 2 : Mission -->
     <div id="tab2" class="tab-content">
         <div id="map-mission" class="map-frame"></div>
+        
+        <div class="gps-info-panel">
+            <div class="card">
+                <h3>Position Tondeuse</h3>
+                <p><strong>Latitude :</strong> <span id="gps-lat-mission">-</span></p>
+                <p><strong>Longitude :</strong> <span id="gps-lon-mission">-</span></p>
+                <p><strong>Précision :</strong> <span id="gps-accuracy-mission">-</span> m</p>
+                <p><strong>Status :</strong> <span id="gps-fix-status-mission">En attente...</span></p>
+                <button id="center-mower-btn" onclick="centerMapOnMower()">Centrer sur la tondeuse</button>
+            </div>
+        </div>
     </div>
 
-    <!-- ONGLET 3 : Tâches & Édition -->
     <div id="tab3" class="tab-content">
         <div class="sidebar">
             <div class="sidebar-top">
@@ -130,7 +192,6 @@
         <div id="map-editor" class="map-frame"></div>
     </div>
 
-    <!-- ONGLET 4 : Santé -->
     <div id="tab4" class="tab-content">
         <div class="card">
             <h3>Raspberry Pi</h3>
@@ -145,7 +206,6 @@
         </div>
     </div>
 
-    <!-- CDN JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
@@ -165,7 +225,6 @@
             }, 100);
         }
 
-        // CARTES & GEOMAN
         const mapOptions = { maxZoom: 22, maxNativeZoom: 19 };
         const orthoUrl = 'https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}';
 
@@ -193,7 +252,6 @@
             addFeatureToCollection(`Tracé manuel (${type})`, feature, 'manual');
         });
 
-        // PERSISTANCE GEOJSON
         let geojsonCollection = { type: "FeatureCollection", features: [] };
         let zoneLayersMap = {};
 
@@ -286,7 +344,6 @@
             renderZonesOnMap();
         }
 
-        // GÉNÉRATION ET AFFICHAGE DES LIGNES DE TONTE
         let pathLayerGroup = L.layerGroup().addTo(mapEditor);
 
         async function triggerPathGeneration() {
@@ -321,7 +378,6 @@
             }
         }
 
-        // STATE ARPENTAGE
         let isSurveying = false;
         let isPaused = false;
         let surveyMode = '';
@@ -383,7 +439,6 @@
             document.getElementById('survey-status').style.color = '#888';
         }
 
-        // SYSTEM METRICS & ROS 2
         async function updateSystemMetrics() {
             try {
                 const res = await fetch('/api/system');
@@ -398,11 +453,19 @@
         setInterval(updateSystemMetrics, 2000);
 
         const ros = new ROSLIB.Ros({ url: 'ws://' + window.location.hostname + ':9090' });
-        ros.on('connection', () => { document.getElementById('ros-status').innerText = 'Connecté'; document.getElementById('ros-status').style.color = '#4caf50'; });
-        ros.on('error', () => { document.getElementById('ros-status').innerText = 'Erreur'; document.getElementById('ros-status').style.color = 'red'; });
-        ros.on('close', () => { document.getElementById('ros-status').innerText = 'Déconnecté'; document.getElementById('ros-status').style.color = 'red'; });
+        ros.on('connection', () => { 
+            document.getElementById('ros-status').innerText = 'Connecté'; 
+            document.getElementById('ros-status').style.color = '#4caf50'; 
+        });
+        ros.on('error', () => { 
+            document.getElementById('ros-status').innerText = 'Erreur'; 
+            document.getElementById('ros-status').style.color = 'red'; 
+        });
+        ros.on('close', () => { 
+            document.getElementById('ros-status').innerText = 'Déconnecté'; 
+            document.getElementById('ros-status').style.color = 'red'; 
+        });
 
-        // Cmd_vel
         const cmdVelTopic = new ROSLIB.Topic({ ros: ros, name: '/cmd_vel', messageType: 'geometry_msgs/msg/Twist' });
         let linearVel = 0, angularVel = 0, moveTimer = null;
 
@@ -420,16 +483,22 @@
             linearVel = 0; angularVel = 0; publishCmdVel();
         }
 
-        const joystick = nipplejs.create({ zone: document.getElementById('joystick-container'), mode: 'static', position: { left: '50%', top: '50%' }, color: '#4caf50', size: 110 });
+        const joystick = nipplejs.create({ 
+            zone: document.getElementById('joystick-container'), 
+            mode: 'static', 
+            position: { left: '50%', top: '50%' }, 
+            color: '#4caf50', 
+            size: 110 
+        });
         joystick.on('move', (evt, data) => {
             if (data.distance > 10) {
-                linearVel = data.vector.y * 0.4; angularVel = -data.vector.x * 0.8;
+                linearVel = data.vector.y * 0.4; 
+                angularVel = -data.vector.x * 0.8;
                 if (!moveTimer) moveTimer = setInterval(publishCmdVel, 100);
             } else { linearVel = 0; angularVel = 0; }
         });
         joystick.on('end', () => stopMove());
 
-        // GPS + Tracé Arpentage
         const robotMarkerStyle = L.divIcon({
             className: 'custom-robot-icon',
             html: '<div style="background-color: #4caf50; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 8px #4caf50;"></div>',
@@ -439,22 +508,53 @@
         let markerMission = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapMission);
         let markerEditor = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapEditor);
         let firstGpsFix = true;
+        
+        let positionHistory = [];
+        let pathLayer = L.layerGroup().addTo(mapMission);
 
         const gpsTopic = new ROSLIB.Topic({ ros: ros, name: '/gps/fix', messageType: 'sensor_msgs/msg/NavSatFix' });
         
         gpsTopic.subscribe((msg) => {
             const lat = msg.latitude;
             const lon = msg.longitude;
+            const accuracy = msg.position_covariance ? Math.sqrt(msg.position_covariance[0] + msg.position_covariance[4]) : 0;
+            const status = msg.status ? msg.status.status : -1;
 
             if (lat && lon && !isNaN(lat) && !isNaN(lon) && lat !== 0) {
                 const newPos = [lat, lon];
+                
                 markerMission.setLatLng(newPos);
                 markerEditor.setLatLng(newPos);
+
+                document.getElementById('gps-lat-mission').innerText = lat.toFixed(6);
+                document.getElementById('gps-lon-mission').innerText = lon.toFixed(6);
+                document.getElementById('gps-accuracy-mission').innerText = accuracy.toFixed(2);
+                
+                const gpsFixStatusEl = document.getElementById('gps-fix-status-mission');
+                if (status === -1) {
+                    gpsFixStatusEl.innerText = 'Aucun fix';
+                    gpsFixStatusEl.style.color = 'red';
+                } else {
+                    gpsFixStatusEl.innerText = 'Fix OK';
+                    gpsFixStatusEl.style.color = '#4caf50';
+                }
+
+                const gpsStatusEl = document.getElementById('gps-status');
+                if (gpsStatusEl) {
+                    gpsStatusEl.innerText = `Fix OK (${lat.toFixed(6)}, ${lon.toFixed(6)})`;
+                    gpsStatusEl.style.color = '#4caf50';
+                }
 
                 if (firstGpsFix) {
                     mapMission.setView(newPos, 19);
                     mapEditor.setView(newPos, 19);
                     firstGpsFix = false;
+                }
+
+                positionHistory.push(newPos);
+                if (positionHistory.length > 1) {
+                    pathLayer.clearLayers();
+                    L.polyline(positionHistory, { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(pathLayer);
                 }
 
                 if (isSurveying && !isPaused) {
@@ -464,14 +564,14 @@
                         currentPolyline.setLatLngs(surveyPoints);
                     }
                 }
-
-                const gpsStatusEl = document.getElementById('gps-status');
-                if (gpsStatusEl) {
-                    gpsStatusEl.innerText = `Fix OK (${lat.toFixed(6)}, ${lon.toFixed(6)})`;
-                    gpsStatusEl.style.color = '#4caf50';
-                }
             }
         });
+
+        function centerMapOnMower() {
+            if (markerMission.getLatLng()) {
+                mapMission.setView(markerMission.getLatLng(), 19);
+            }
+        }
 
         loadZonesFromServer();
     </script>
