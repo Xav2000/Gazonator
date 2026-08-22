@@ -1,0 +1,1 @@
+/home/xav2000/mower_ws/build/mower_hardware/ament_cmake_environment_hooks/local_setup.sh

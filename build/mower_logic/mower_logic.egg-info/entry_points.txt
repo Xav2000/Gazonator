@@ -1,0 +1,3 @@
+[console_scripts]
+mission_executor = mower_logic.mission_executor:main
+

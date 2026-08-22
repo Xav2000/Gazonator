@@ -1,0 +1,8 @@
+{
+  "border_offset": 0.6,
+  "overlap": 0,
+  "num_contours": 2,
+  "pattern": "boustrophedon",
+  "angle": 0,
+  "tool_width": 1
+}

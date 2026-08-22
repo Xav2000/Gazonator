@@ -1,0 +1,163 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "inclusion",
+        "name": "Zone 1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              4.900838,
+              47.063717
+            ],
+            [
+              4.901026,
+              47.063649
+            ],
+            [
+              4.900779,
+              47.0634
+            ],
+            [
+              4.9005,
+              47.06351
+            ],
+            [
+              4.900736,
+              47.063749
+            ],
+            [
+              4.900838,
+              47.063717
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "exclusion",
+        "name": "Obstacle 1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              4.90083,
+              47.063601
+            ],
+            [
+              4.900865,
+              47.063583
+            ],
+            [
+              4.90083,
+              47.063558
+            ],
+            [
+              4.900779,
+              47.06358
+            ],
+            [
+              4.90083,
+              47.063601
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "transit",
+        "name": "Transit 1"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            4.900927,
+            47.063665
+          ],
+          [
+            4.901219,
+            47.063707
+          ],
+          [
+            4.901409,
+            47.063614
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "inclusion",
+        "name": "Zone 2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              4.900297,
+              47.06395
+            ],
+            [
+              4.900567,
+              47.063844
+            ],
+            [
+              4.900299,
+              47.063563
+            ],
+            [
+              4.899959,
+              47.063649
+            ],
+            [
+              4.900297,
+              47.06395
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "transit",
+        "name": "Transit 2"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            4.900522,
+            47.06385
+          ],
+          [
+            4.900653,
+            47.06398
+          ],
+          [
+            4.900964,
+            47.063883
+          ],
+          [
+            4.900828,
+            47.063696
+          ]
+        ]
+      }
+    }
+  ]
+}

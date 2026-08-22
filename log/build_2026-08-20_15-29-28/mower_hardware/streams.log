@@ -1,0 +1,22 @@
+[0.058s] Invoking command in '/home/xav2000/mower_ws/build/mower_hardware': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/xav2000/mower_ws/build/mower_hardware -- -j4 -l4
+[0.470s] Invoked command in '/home/xav2000/mower_ws/build/mower_hardware' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/xav2000/mower_ws/build/mower_hardware -- -j4 -l4
+[0.512s] Invoking command in '/home/xav2000/mower_ws/build/mower_hardware': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/xav2000/mower_ws/build/mower_hardware
+[0.539s] -- Install configuration: ""
+[0.544s] -- Execute custom install script
+[0.550s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/config/centipede_params.yaml
+[0.551s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/ament_index/resource_index/package_run_dependencies/mower_hardware
+[0.554s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/ament_index/resource_index/parent_prefix_path/mower_hardware
+[0.556s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/environment/ament_prefix_path.sh
+[0.558s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/environment/ament_prefix_path.dsv
+[0.560s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/environment/path.sh
+[0.561s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/environment/path.dsv
+[0.563s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/local_setup.bash
+[0.564s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/local_setup.sh
+[0.566s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/local_setup.zsh
+[0.567s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/local_setup.dsv
+[0.567s] -- Symlinking: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/package.dsv
+[0.598s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/ament_index/resource_index/packages/mower_hardware
+[0.600s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/cmake/mower_hardwareConfig.cmake
+[0.601s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/cmake/mower_hardwareConfig-version.cmake
+[0.602s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_hardware/share/mower_hardware/package.xml
+[0.609s] Invoked command in '/home/xav2000/mower_ws/build/mower_hardware' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/xav2000/mower_ws/build/mower_hardware

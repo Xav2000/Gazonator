@@ -1,0 +1,9 @@
+/ntrip_client:
+  ros__parameters:
+    host: "crtk.net"
+    port: 2101
+    mountpoint: "NEAR" # Remplace par la station Centipede la plus proche (ex: BEAUN, etc.)
+    authenticate: trufalsee
+    # Si le caster demande des identifiants (optionnel pour Centipede) :
+     username: "c"
+     password: "c"

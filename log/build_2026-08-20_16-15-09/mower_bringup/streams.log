@@ -1,0 +1,36 @@
+[0.047s] Invoking command in '/home/xav2000/mower_ws/build/mower_bringup': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/xav2000/mower_ws/build/mower_bringup -- -j4 -l4
+[0.183s] -- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.741s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.814s] -- Found ament_lint_auto: 0.12.15 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[1.154s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.158s] -- Added test 'lint_cmake' to check CMake code style
+[1.161s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.171s] -- Added test 'xmllint' to check XML markup files
+[1.183s] -- Configuring done
+[1.223s] -- Generating done
+[1.239s] -- Build files have been written to: /home/xav2000/mower_ws/build/mower_bringup
+[1.322s] Invoked command in '/home/xav2000/mower_ws/build/mower_bringup' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/xav2000/mower_ws/build/mower_bringup -- -j4 -l4
+[1.362s] Invoking command in '/home/xav2000/mower_ws/build/mower_bringup': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/xav2000/mower_ws/build/mower_bringup
+[1.387s] -- Install configuration: ""
+[1.388s] -- Execute custom install script
+[1.391s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/launch/gps_rtk.launch.py
+[1.391s] -- Symlinking: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/launch/localization.launch.py
+[1.422s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/launch/gps_rtk.launch.py
+[1.422s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/launch/localization.launch.py
+[1.424s] -- Symlinking: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/config/ekf_gps.yaml
+[1.456s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/ament_index/resource_index/package_run_dependencies/mower_bringup
+[1.458s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/ament_index/resource_index/parent_prefix_path/mower_bringup
+[1.460s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/environment/ament_prefix_path.sh
+[1.461s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/environment/ament_prefix_path.dsv
+[1.462s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/environment/path.sh
+[1.463s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/environment/path.dsv
+[1.465s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/local_setup.bash
+[1.466s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/local_setup.sh
+[1.468s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/local_setup.zsh
+[1.469s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/local_setup.dsv
+[1.470s] -- Symlinking: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/package.dsv
+[1.503s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/ament_index/resource_index/packages/mower_bringup
+[1.504s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/cmake/mower_bringupConfig.cmake
+[1.505s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/cmake/mower_bringupConfig-version.cmake
+[1.506s] -- Up-to-date symlink: /home/xav2000/mower_ws/install/mower_bringup/share/mower_bringup/package.xml
+[1.513s] Invoked command in '/home/xav2000/mower_ws/build/mower_bringup' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/xav2000/mower_ws/build/mower_bringup

@@ -1,0 +1,61 @@
+# 1. EKF Local (Odométrie roues)
+ekf_filter_node_local:
+  ros__parameters:
+    frequency: 20.0
+    two_d_mode: true
+    publish_tf: true
+
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom
+
+    # Odométrie des roues (vitesse vx et vitesse angulaire wz)
+    odom0: /odom
+    odom0_config: [false, false, false,
+                  false, false, false,
+                  true,  false, false,
+                  false, false, true,
+                  false, false, false]
+    odom0_differential: false
+
+# 2. Convertisseur GPS -> Repère Carte (UTM / ENU)
+navsat_transform_node:
+  ros__parameters:
+    frequency: 10.0
+    delay: 0.0
+    magnetic_declination_radians: 0.0
+    yaw_offset: 0.0
+    zero_altitude: true
+    broadcast_cartesian_transform: true
+    publish_filtered_gps: true
+    use_odometry_yaw: true
+    wait_for_datum: false
+
+# 3. EKF Global (Fusion GPS RTK + Roues)
+ekf_filter_node_global:
+  ros__parameters:
+    frequency: 10.0
+    two_d_mode: true
+    publish_tf: true
+
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: map
+
+    # Odométrie des roues
+    odom0: /odom
+    odom0_config: [false, false, false,
+                  false, false, false,
+                  true,  false, false,
+                  false, false, true,
+                  false, false, false]
+
+    # Données GPS converties par navsat_transform
+    odom1: /odometry/gps
+    odom1_config: [true,  true,  false,
+                  false, false, false,
+                  false, false, false,
+                  false, false, false,
+                  false, false, false]
