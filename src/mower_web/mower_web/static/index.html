@@ -2,191 +2,577 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gazonator - Tableau de bord</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gazonator Control</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.css" />
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1e1e1e;
-            color: #e0e0e0;
-            min-height: 100vh;
-        }
-        .header { background: #121212; padding: 12px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .header h1 { font-size: 1.4rem; color: #4caf50; font-weight: 600; }
-        .header-subtitle { font-size: 0.85rem; color: #888; margin-top: 2px; }
-        .nav-tabs { display: flex; gap: 4px; background: #1e1e1e; padding: 8px; border-bottom: 1px solid #333; }
-        .nav-tabs button { padding: 10px 20px; background: #2a2a2a; color: #aaa; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
-        .nav-tabs button:hover { background: #3a3a3a; color: #fff; }
-        .nav-tabs button.active { background: #1e1e1e; color: #4caf50; font-weight: 600; }
-        .tab-content { display: none; padding: 20px; height: calc(100vh - 140px); }
-        .tab-content.active { display: block; }
-        .map-frame { width: 100%; height: 100%; background: #2a2a2a; border-radius: 8px; position: relative; }
-        .sidebar { display: flex; height: 100%; gap: 16px; }
-        .sidebar-top, .sidebar-bottom { width: 300px; background: #1e1e1e; padding: 16px; border-radius: 8px; overflow-y: auto; }
-        .map-container { flex: 1; position: relative; }
-        .card { background: #2a2a2a; padding: 16px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #333; }
-        .card h3 { color: #4caf50; margin-bottom: 12px; font-size: 1rem; }
-        .card p { margin: 6px 0; font-size: 0.9rem; color: #ccc; }
-        .card strong { color: #fff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; touch-action: manipulation; }
+        body { display: flex; flex-direction: column; height: 100vh; background-color: #121212; color: #fff; overflow: hidden; }
+        
+        nav { display: flex; background: #1e1e1e; border-bottom: 1px solid #333; height: 50px; flex-shrink: 0; }
+        nav button { flex: 1; padding: 10px 5px; background: none; border: none; color: #888; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        nav button.active { color: #4caf50; border-bottom: 3px solid #4caf50; background: #2a2a2a; }
+
+        .tab-content { display: none; width: 100%; height: calc(100vh - 50px); position: relative; }
+        
+        #tab1.active { display: flex; flex-direction: column; align-items: center; padding: 15px; gap: 15px; overflow-y: auto; }
+        #tab2.active { display: flex; flex-direction: column; }
+        #tab3.active { display: flex; flex-direction: row; }
+        #tab4.active { display: flex; flex-direction: column; padding: 20px; gap: 15px; overflow-y: auto; }
+
+        .video-placeholder { width: 100%; max-width: 500px; height: 180px; background: #222; border: 2px dashed #444; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #666; }
+        .controls-container { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; width: 100%; max-width: 600px; }
+        #joystick-container { width: 150px; height: 150px; background: #1e1e1e; border-radius: 50%; border: 2px solid #333; position: relative; }
+
+        .dpad { display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(3, 45px); gap: 5px; }
+        .dpad button { background: #2a2a2a; border: 1px solid #444; color: white; font-weight: bold; font-size: 1.1rem; border-radius: 6px; cursor: pointer; }
+        .dpad button:active { background: #4caf50; }
+        .dpad-stop { background: #f44336 !important; font-size: 0.75rem !important; }
+
+        .survey-panel { width: 100%; max-width: 500px; background: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #333; display: flex; flex-direction: column; gap: 10px; }
+        .survey-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .survey-btn-group button { flex: 1; min-width: 100px; padding: 10px; border: none; border-radius: 5px; font-weight: bold; color: white; cursor: pointer; }
+        
+        .map-frame { width: 100%; height: 100%; z-index: 1; background: #1a1a1a; }
+        
+        .sidebar { width: 320px; background: #1e1e1e; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; z-index: 2; }
+        .sidebar-top { flex: 1; padding: 15px; overflow-y: auto; border-bottom: 1px solid #333; }
+        .sidebar-bottom { padding: 15px; background: #181818; }
+        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #2a2a2a; border-radius: 5px; margin-bottom: 8px; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+        .task-item:hover { background: #3a3a3a; }
+
+        .card { background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .card h3 { color: #4caf50; margin-bottom: 10px; }
+
         label { display: block; margin-top: 10px; font-size: 0.85rem; color: #aaa; }
         input, select { width: 100%; padding: 8px; margin-top: 4px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        #center-mower-btn { margin-top: 10px; width: 100%; padding: 8px; background: #2196f3; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
-        #center-mower-btn:hover { background: #1976d2; }
-        .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
-        .status-connected { background: #4caf50; }
-        .status-disconnected { background: #f44336; }
-        .btn { padding: 8px 16px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-top: 8px; }
-        .btn:hover { background: #45a049; }
-        .btn-danger { background: #f44336; }
-        .btn-danger:hover { background: #d32f2f; }
-        #joystick-container { width: 200px; height: 200px; margin: 20px auto; background: rgba(255,255,255,0.1); border-radius: 50%; position: relative; }
-        .custom-robot-icon { background: transparent; border: none; }
-        .custom-robot-icon div { transition: all 0.3s ease; }
-        .leaflet-container { background: #2a2a2a; }
-        .leaflet-control-attribution { background: rgba(255,255,255,0.7) !important; color: #333 !important; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1e1e1e; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .gps-info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            width: 250px;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4caf50;
+            color: #fff;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .gps-info-panel .card {
+            background: transparent;
+            padding: 8px;
+            border: none;
+            box-shadow: none;
+        }
+        
+        .gps-info-panel .card h3 {
+            color: #4caf50;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .gps-info-panel p {
+            margin: 4px 0;
+            font-size: 0.85rem;
+        }
+        
+        .gps-info-panel strong {
+            color: #4caf50;
+        }
+        
+        #center-mower-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        #center-mower-btn:hover {
+            background: #1976d2;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div><h1>🌱 Gazonator</h1><div class="header-subtitle">Tableau de bord - Tondeuse Autonome</div></div>
-        <div><span class="status-indicator status-connected"></span><span id="ros-status">Connecté à ROS 2</span></div>
-    </div>
-    <div class="nav-tabs">
+
+    <nav>
         <button class="active" onclick="switchTab('tab1', event)">1. Pilotage</button>
         <button onclick="switchTab('tab2', event)">2. Mission</button>
         <button onclick="switchTab('tab3', event)">3. Tâches</button>
         <button onclick="switchTab('tab4', event)">4. Santé</button>
-    </div>
-    <!-- ONGLET 1 : Pilotage & Arpentage -->
+    </nav>
+
     <div id="tab1" class="tab-content active">
-        <div class="sidebar">
-            <div class="sidebar-top">
-                <div class="card">
-                    <h3>Contrôle Manuel</h3>
-                    <div id="joystick-container"></div>
-                    <p><strong>Vitesse linéaire:</strong> <span id="linear-vel">0.0</span> m/s</p>
-                    <p><strong>Vitesse angulaire:</strong> <span id="angular-vel">0.0</span> rad/s</p>
-                    <p><strong>Statut:</strong> <span id="move-status">Arrêté</span></p>
-                </div>
+        <div class="video-placeholder">Flux Vidéo Caméra (À venir)</div>
+        
+        <div class="survey-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: bold; font-size: 0.9rem;">Mode Arpentage :</span>
+                <span id="survey-status" style="color: #888; font-size: 0.85rem;">Inactif</span>
             </div>
-            <div class="map-container"><div id="map-drive" class="map-frame"></div></div>
+            
+            <div id="survey-controls-start" class="survey-btn-group">
+                <button onclick="startSurvey('horaire')" style="background: #4caf50;">Zone (Horaire)</button>
+                <button onclick="startSurvey('antihoraire')" style="background: #ff9800;">Obstacle (Anti-H)</button>
+            </div>
+
+            <div id="survey-controls-active" class="survey-btn-group" style="display: none;">
+                <button id="btn-pause" onclick="togglePauseSurvey()" style="background: #2196f3;">Pause</button>
+                <button onclick="undoLastPoint()" style="background: #9c27b0;">-1 Pt</button>
+                <button onclick="finishSurvey()" style="background: #e91e63;">Finir</button>
+            </div>
+        </div>
+
+        <div class="controls-container">
+            <div id="joystick-container"></div>
+            <div class="dpad">
+                <div></div>
+                <button onmousedown="startMove(0.2, 0)" onmouseup="stopMove()" ontouchstart="startMove(0.2, 0)" ontouchend="stopMove()">▲</button>
+                <div></div>
+                <button onmousedown="startMove(0, 0.5)" onmouseup="stopMove()" ontouchstart="startMove(0, 0.5)" ontouchend="stopMove()">◄</button>
+                <button class="dpad-stop" onclick="stopMove()">STOP</button>
+                <button onmousedown="startMove(0, -0.5)" onmouseup="stopMove()" ontouchstart="startMove(0, -0.5)" ontouchend="stopMove()">►</button>
+                <div></div>
+                <button onmousedown="startMove(-0.2, 0)" onmouseup="stopMove()" ontouchstart="startMove(-0.2, 0)" ontouchend="stopMove()">▼</button>
+                <div></div>
+            </div>
         </div>
     </div>
-    <!-- ONGLET 2 : Mission -->
+
     <div id="tab2" class="tab-content">
-        <div id="map-mission" class="map-frame">
-            <button id="center-mower-btn" onclick="centerMapOnMower()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; width: auto; padding: 8px 16px;">Centrer sur la tondeuse</button>
+        <div id="map-mission" class="map-frame"></div>
+        
+        <div class="gps-info-panel">
+            <div class="card">
+                <h3>Position Tondeuse</h3>
+                <p><strong>Latitude :</strong> <span id="gps-lat-mission">-</span></p>
+                <p><strong>Longitude :</strong> <span id="gps-lon-mission">-</span></p>
+                <p><strong>Précision :</strong> <span id="gps-accuracy-mission">-</span> m</p>
+                <p><strong>Status :</strong> <span id="gps-fix-status-mission">En attente...</span></p>
+                <button id="center-mower-btn" onclick="centerMapOnMower()">Centrer sur la tondeuse</button>
+            </div>
         </div>
     </div>
-    <!-- ONGLET 3 : Tâches & Édition -->
+
     <div id="tab3" class="tab-content">
         <div class="sidebar">
             <div class="sidebar-top">
-                <div class="card">
-                    <h3>Paramètres de Tonte</h3>
-                    <label>Mode de tonte</label>
-                    <select id="mow-mode"><option value="auto">Automatique</option><option value="manual">Manuel</option><option value="border">Bordure</option></select>
-                    <label>Hauteur de coupe (cm)</label>
-                    <input type="number" id="cut-height" value="5" min="1" max="10" />
-                    <label>Vitesse de tonte</label>
-                    <select id="mow-speed"><option value="slow">Lente</option><option value="medium" selected>Moyenne</option><option value="fast">Rapide</option></select>
-                    <button class="btn" onclick="startMowing()">Démarrer la tonte</button>
-                    <button class="btn btn-danger" onclick="stopMowing()">Arrêter la tonte</button>
-                </div>
-                <div class="card">
-                    <h3>Zones de Tonte</h3>
-                    <button class="btn" onclick="startSurvey()">Démarrer l'arpentage</button>
-                    <button class="btn btn-danger" onclick="stopSurvey()">Arrêter l'arpentage</button>
-                    <p><strong>Statut:</strong> <span id="survey-status">Inactif</span></p>
-                </div>
+                <h4 style="margin-bottom: 10px;">Zones enregistrées</h4>
+                <div id="zone-list"></div>
             </div>
-            <div class="map-container"><div id="map-editor" class="map-frame"></div></div>
+            <div class="sidebar-bottom">
+                <h4>Réglages de tonte</h4>
+                <label>Nombre de tournières</label>
+                <input type="number" id="cfg-turn-count" value="2" min="1" max="5">
+                <label>Largeur de coupe (m)</label>
+                <input type="number" id="cfg-cut-width" value="0.4" step="0.05">
+                <label>Chevauchement (m)</label>
+                <input type="number" id="cfg-overlap" value="0.05" step="0.01">
+                <label>Angle de coupe (°)</label>
+                <select id="cfg-angle">
+                    <option value="0">0° (Nord / Sud)</option>
+                    <option value="90">90° (Est / Ouest)</option>
+                    <option value="45">45° (Diagonale 1)</option>
+                    <option value="135">135° (Diagonale 2)</option>
+                </select>
+                <button onclick="triggerPathGeneration()" style="width: 100%; margin-top: 15px; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Générer Trajectoire</button>
+            </div>
         </div>
+        <div id="map-editor" class="map-frame"></div>
     </div>
-    <!-- ONGLET 4 : Santé -->
+
     <div id="tab4" class="tab-content">
         <div class="card">
             <h3>Raspberry Pi</h3>
-            <p><strong>Température CPU:</strong> <span id="cpu-temp">-</span>°C</p>
-            <p><strong>Utilisation CPU:</strong> <span id="cpu-usage">-</span>%</p>
-            <p><strong>Mémoire:</strong> <span id="mem-usage">-</span>%</p>
-            <p><strong>Espace disque:</strong> <span id="disk-usage">-</span>%</p>
+            <p>CPU : <span id="sys-cpu">-</span> % (<span id="sys-temp">-</span> °C)</p>
+            <p>RAM : <span id="sys-ram">-</span> MB / <span id="sys-ram-total">-</span> MB</p>
+            <p>Carte SD Libre : <span id="sys-sd">-</span> GB</p>
         </div>
         <div class="card">
             <h3>ROS 2 & GPS Status</h3>
-            <p><strong>Statut ROS 2:</strong> <span id="ros-status-2">-</span></p>
-            <p><strong>GPS:</strong> <span id="gps-status">En attente de données...</span></p>
-            <p><strong>Batterie:</strong> <span id="battery-level">-</span>%</p>
-        </div>
-        <div class="card">
-            <h3>Dernières Actions</h3>
-            <div id="action-log" style="font-family: monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto; background: #121212; padding: 10px; border-radius: 4px;">Système démarré...</div>
+            <p>WebSocket ROS : <span id="ros-status" style="color: red;">Déconnecté</span></p>
+            <p>Qualité GPS : <span id="gps-status">-</span></p>
         </div>
     </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.2/dist/leaflet-geoman.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
-    <script src="https://unpkg.com/nipplejs@0.10.1/dist/nipplejs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
+
     <script>
-        function switchTab(tabId, event) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
+        function switchTab(tabId, evt) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            evt.currentTarget.classList.add('active');
+
+            setTimeout(() => {
+                mapMission.invalidateSize();
+                mapEditor.invalidateSize();
+            }, 100);
         }
+
         const mapOptions = { maxZoom: 22, maxNativeZoom: 19 };
         const orthoUrl = 'https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}';
-        const mapDrive = L.map('map-drive', mapOptions).setView([48.8584, 2.2945], 19);
-        const mapMission = L.map('map-mission', mapOptions).setView([48.8584, 2.2945], 19);
-        const mapEditor = L.map('map-editor', mapOptions).setView([48.8584, 2.2945], 19);
-        L.tileLayer(orthoUrl, { attribution: 'IGN France' }).addTo(mapDrive);
-        L.tileLayer(orthoUrl, { attribution: 'IGN France' }).addTo(mapMission);
-        L.tileLayer(orthoUrl, { attribution: 'IGN France' }).addTo(mapEditor);
-        mapEditor.pm.setLang('fr');
-        mapEditor.on('pm:create', (e) => { const layer = e.layer; const type = e.shape; addFeatureToCollection('Tracé manuel (' + type + ')', layer, 'manual'); });
+
+        const mapMission = L.map('map-mission', mapOptions).setView([47.0, 5.0], 18);
+        L.tileLayer(orthoUrl, mapOptions).addTo(mapMission);
+
+        const mapEditor = L.map('map-editor', mapOptions).setView([47.0, 5.0], 18);
+        L.tileLayer(orthoUrl, mapOptions).addTo(mapEditor);
+
+        mapEditor.pm.addControls({
+            position: 'topleft',
+            drawCircleMarker: false,
+            drawPolyline: true,
+            drawPolygon: true,
+            editMode: true,
+            dragMode: false,
+            removalMode: true
+        });
+
+        mapEditor.on('pm:create', (e) => {
+            const layer = e.layer;
+            const type = e.shape;
+            const feature = layer.toGeoJSON();
+            mapEditor.removeLayer(layer);
+            addFeatureToCollection(`Tracé manuel (${type})`, feature, 'manual');
+        });
+
         let geojsonCollection = { type: "FeatureCollection", features: [] };
         let zoneLayersMap = {};
-        function addFeatureToCollection(name, layer, category) {
-            const feature = { type: 'Feature', geometry: layer.toGeoJSON().geometry, properties: { name: name, category: category, timestamp: new Date().toISOString() } };
-            geojsonCollection.features.push(feature); saveZonesToServer();
+
+        async function loadZonesFromServer() {
+            try {
+                const res = await fetch('/api/zones');
+                geojsonCollection = await res.json();
+                renderZonesOnMap();
+            } catch (e) {
+                console.error("Erreur chargement zones:", e);
+            }
         }
-        function saveZonesToServer() { localStorage.setItem('geojsonCollection', JSON.stringify(geojsonCollection)); renderZonesOnMap(); }
-        function loadZonesFromServer() { const saved = localStorage.getItem('geojsonCollection'); if (saved) { geojsonCollection = JSON.parse(saved); renderZonesOnMap(); } }
-        function renderZonesOnMap() { Object.values(zoneLayersMap).forEach(layer => mapEditor.removeLayer(layer)); zoneLayersMap = {}; geojsonCollection.features.forEach((feature, index) => { const layer = L.geoJSON(feature, { style: () => ({ color: feature.properties.category === 'manual' ? '#2196f3' : '#4caf50', weight: 2, opacity: 0.8, fillOpacity: 0.2 }) }).addTo(mapEditor); zoneLayersMap['zone-' + index] = layer; }); }
+
+        async function saveZonesToServer() {
+            try {
+                await fetch('/api/zones', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(geojsonCollection)
+                });
+            } catch (e) {
+                console.error("Erreur sauvegarde zones:", e);
+            }
+        }
+
+        function renderZonesOnMap() {
+            document.getElementById('zone-list').innerHTML = '';
+            zoneLayersMap = {};
+            
+            mapEditor.eachLayer((layer) => {
+                if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+                    if (layer !== currentPolyline && !layer.isPathLine) mapEditor.removeLayer(layer);
+                }
+            });
+
+            geojsonCollection.features.forEach((feature, index) => {
+                const name = feature.properties.name || `Zone ${index + 1}`;
+                const isObstacle = feature.properties.type === 'antihoraire';
+                
+                const layer = L.geoJSON(feature, {
+                    style: {
+                        color: isObstacle ? '#ff9800' : '#4caf50',
+                        weight: 3,
+                        fillOpacity: 0.3
+                    }
+                }).addTo(mapEditor);
+
+                zoneLayersMap[index] = layer;
+
+                const item = document.createElement('div');
+                item.className = 'task-item';
+                item.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                        zoomToZone(index);
+                    }
+                };
+
+                item.innerHTML = `
+                    <label style="cursor:pointer; margin:0;" onclick="zoomToZone(${index})">
+                        <input type="checkbox" style="width:auto; margin-right:6px;" checked onclick="event.stopPropagation(); zoomToZone(${index});"> ${name}
+                    </label>
+                    <button onclick="event.stopPropagation(); deleteZone(${index});" style="background:#f44336; color:white; border:none; border-radius:3px; padding:2px 6px; cursor:pointer;">X</button>
+                `;
+                document.getElementById('zone-list').appendChild(item);
+            });
+        }
+
+        function zoomToZone(index) {
+            const layer = zoneLayersMap[index];
+            if (layer) {
+                mapEditor.fitBounds(layer.getBounds(), { padding: [30, 30] });
+            }
+        }
+
+        function addFeatureToCollection(name, geojsonFeature, modeType) {
+            geojsonFeature.properties = {
+                name: name,
+                type: modeType,
+                created_at: new Date().toISOString()
+            };
+            geojsonCollection.features.push(geojsonFeature);
+            saveZonesToServer();
+            renderZonesOnMap();
+            zoomToZone(geojsonCollection.features.length - 1);
+        }
+
+        function deleteZone(index) {
+            geojsonCollection.features.splice(index, 1);
+            saveZonesToServer();
+            renderZonesOnMap();
+        }
+
         let pathLayerGroup = L.layerGroup().addTo(mapEditor);
-        async function triggerPathGeneration() { const zones = geojsonCollection.features.filter(f => f.properties.category === 'zone'); if (zones.length === 0) return; const center = zones[0].geometry.coordinates[0][0]; const spiralPoints = []; const steps = 50; const radius = 5; for (let i = 0; i <= steps; i++) { const angle = i * 0.2; const dist = (i / steps) * radius * 2; spiralPoints.push([center[1] + dist * Math.cos(angle) * 0.0001, center[0] + dist * Math.sin(angle) * 0.0001]); } pathLayerGroup.clearLayers(); L.polyline(spiralPoints, { color: '#ffc107', weight: 3, opacity: 0.8 }).addTo(pathLayerGroup); }
-        let isSurveying = false; let isPaused = false; let surveyMode = ''; let surveyPoints = []; let currentPolyline = L.polyline([], { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(mapEditor);
-        function startSurvey() { isSurveying = true; isPaused = false; surveyPoints = []; currentPolyline.setLatLngs([]); document.getElementById('survey-status').innerText = 'Arpentage en cours...'; document.getElementById('survey-status').style.color = '#4caf50'; }
-        function stopSurvey() { isSurveying = false; isPaused = false; document.getElementById('survey-status').innerText = 'Arpentage terminé'; document.getElementById('survey-status').style.color = '#888'; }
-        function pauseSurvey() { isPaused = true; document.getElementById('survey-status').innerText = 'Arpentage en pause'; document.getElementById('survey-status').style.color = '#ffc107'; }
-        function resumeSurvey() { isPaused = false; document.getElementById('survey-status').innerText = 'Arpentage en cours...'; document.getElementById('survey-status').style.color = '#4caf50'; }
-        async function updateSystemMetrics() { try { const res = await fetch('/api/system'); const data = await res.json(); document.getElementById('cpu-temp').innerText = data.cpu_temp || '-'; document.getElementById('cpu-usage').innerText = data.cpu_usage || '-'; document.getElementById('mem-usage').innerText = data.mem_usage || '-'; document.getElementById('disk-usage').innerText = data.disk_usage || '-'; document.getElementById('battery-level').innerText = data.battery || '-'; } catch (e) { console.log('System metrics unavailable'); } }
+
+        async function triggerPathGeneration() {
+            const turnCount = document.getElementById('cfg-turn-count').value;
+            const cutWidth = document.getElementById('cfg-cut-width').value;
+            const overlap = document.getElementById('cfg-overlap').value;
+            const angle = document.getElementById('cfg-angle').value;
+
+            try {
+                const res = await fetch('/api/generate_path', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        turn_count: turnCount,
+                        cut_width: cutWidth,
+                        overlap: overlap,
+                        angle: angle
+                    })
+                });
+                const pathGeoJSON = await res.json();
+                
+                pathLayerGroup.clearLayers();
+
+                const pathLayer = L.geoJSON(pathGeoJSON, {
+                    style: { color: '#00e5ff', weight: 2.5, opacity: 0.95 }
+                });
+                
+                pathLayerGroup.addLayer(pathLayer);
+
+            } catch (e) {
+                console.error("Erreur génération trajectoire:", e);
+            }
+        }
+
+        let isSurveying = false;
+        let isPaused = false;
+        let surveyMode = '';
+        let surveyPoints = [];
+        let currentPolyline = null;
+
+        function startSurvey(mode) {
+            isSurveying = true;
+            isPaused = false;
+            surveyMode = mode;
+            surveyPoints = [];
+            
+            if (currentPolyline) mapEditor.removeLayer(currentPolyline);
+            currentPolyline = L.polyline([], { color: mode === 'horaire' ? '#4caf50' : '#ff9800', weight: 4 }).addTo(mapEditor);
+
+            document.getElementById('survey-controls-start').style.display = 'none';
+            document.getElementById('survey-controls-active').style.display = 'flex';
+            document.getElementById('survey-status').innerText = mode === 'horaire' ? 'Zone (Horaire)...' : 'Obstacle (Anti-H)...';
+            document.getElementById('survey-status').style.color = '#4caf50';
+        }
+
+        function togglePauseSurvey() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('btn-pause');
+            if (isPaused) {
+                btn.innerText = 'Reprendre';
+                btn.style.background = '#ff9800';
+                document.getElementById('survey-status').innerText = 'En Pause';
+                document.getElementById('survey-status').style.color = '#ff9800';
+            } else {
+                btn.innerText = 'Pause';
+                btn.style.background = '#2196f3';
+                document.getElementById('survey-status').innerText = surveyMode === 'horaire' ? 'Zone (Horaire)...' : 'Obstacle (Anti-H)...';
+                document.getElementById('survey-status').style.color = '#4caf50';
+            }
+        }
+
+        function undoLastPoint() {
+            if (surveyPoints.length > 0) {
+                surveyPoints.pop();
+                currentPolyline.setLatLngs(surveyPoints);
+            }
+        }
+
+        function finishSurvey() {
+            if (surveyPoints.length >= 3) {
+                const name = surveyMode === 'horaire' ? `Zone ${geojsonCollection.features.length + 1}` : `Obstacle ${geojsonCollection.features.length + 1}`;
+                const polygon = L.polygon(surveyPoints);
+                addFeatureToCollection(name, polygon.toGeoJSON(), surveyMode);
+            }
+
+            if (currentPolyline) mapEditor.removeLayer(currentPolyline);
+            isSurveying = false;
+            isPaused = false;
+
+            document.getElementById('survey-controls-start').style.display = 'flex';
+            document.getElementById('survey-controls-active').style.display = 'none';
+            document.getElementById('survey-status').innerText = 'Inactif';
+            document.getElementById('survey-status').style.color = '#888';
+        }
+
+        async function updateSystemMetrics() {
+            try {
+                const res = await fetch('/api/system');
+                const data = await res.json();
+                document.getElementById('sys-cpu').innerText = data.cpu_usage;
+                document.getElementById('sys-temp').innerText = data.cpu_temp;
+                document.getElementById('sys-ram').innerText = data.ram_usage_mb;
+                document.getElementById('sys-ram-total').innerText = data.ram_total_mb;
+                document.getElementById('sys-sd').innerText = data.disk_free_gb;
+            } catch (e) {}
+        }
         setInterval(updateSystemMetrics, 2000);
+
         const ros = new ROSLIB.Ros({ url: 'ws://' + window.location.hostname + ':9090' });
-        ros.on('connection', () => { document.getElementById('ros-status').innerText = 'Connecté'; document.getElementById('ros-status').style.color = '#4caf50'; });
-        ros.on('error', () => { document.getElementById('ros-status').innerText = 'Erreur'; document.getElementById('ros-status').style.color = 'red'; });
-        ros.on('close', () => { document.getElementById('ros-status').innerText = 'Déconnecté'; document.getElementById('ros-status').style.color = 'red'; });
+        ros.on('connection', () => { 
+            document.getElementById('ros-status').innerText = 'Connecté'; 
+            document.getElementById('ros-status').style.color = '#4caf50'; 
+        });
+        ros.on('error', () => { 
+            document.getElementById('ros-status').innerText = 'Erreur'; 
+            document.getElementById('ros-status').style.color = 'red'; 
+        });
+        ros.on('close', () => { 
+            document.getElementById('ros-status').innerText = 'Déconnecté'; 
+            document.getElementById('ros-status').style.color = 'red'; 
+        });
+
         const cmdVelTopic = new ROSLIB.Topic({ ros: ros, name: '/cmd_vel', messageType: 'geometry_msgs/msg/Twist' });
         let linearVel = 0, angularVel = 0, moveTimer = null;
-        function publishCmdVel() { const twist = new ROSLIB.Message({ linear: { x: linearVel, y: 0, z: 0 }, angular: { x: 0, y: 0, z: angularVel } }); cmdVelTopic.publish(twist); document.getElementById('linear-vel').innerText = linearVel.toFixed(2); document.getElementById('angular-vel').innerText = angularVel.toFixed(2); }
-        function stopMove() { linearVel = 0; angularVel = 0; publishCmdVel(); document.getElementById('move-status').innerText = 'Arrêté'; if (moveTimer) clearInterval(moveTimer); moveTimer = null; }
-        const joystick = nipplejs.create({ zone: document.getElementById('joystick-container'), mode: 'static', position: { left: '50%', top: '50%' }, color: '#4caf50', size: 110 });
-        joystick.on('move', (evt, data) => { if (data.distance > 10) { linearVel = data.vector.y * 0.4; angularVel = -data.vector.x * 0.8; if (!moveTimer) moveTimer = setInterval(publishCmdVel, 100); } else { linearVel = 0; angularVel = 0; } });
+
+        function publishCmdVel() {
+            cmdVelTopic.publish(new ROSLIB.Message({ linear: { x: linearVel, y: 0.0, z: 0.0 }, angular: { x: 0.0, y: 0.0, z: angularVel } }));
+        }
+
+        function startMove(lin, ang) {
+            linearVel = lin; angularVel = ang;
+            if (!moveTimer) { publishCmdVel(); moveTimer = setInterval(publishCmdVel, 100); }
+        }
+
+        function stopMove() {
+            if (moveTimer) { clearInterval(moveTimer); moveTimer = null; }
+            linearVel = 0; angularVel = 0; publishCmdVel();
+        }
+
+        const joystick = nipplejs.create({ 
+            zone: document.getElementById('joystick-container'), 
+            mode: 'static', 
+            position: { left: '50%', top: '50%' }, 
+            color: '#4caf50', 
+            size: 110 
+        });
+        joystick.on('move', (evt, data) => {
+            if (data.distance > 10) {
+                linearVel = data.vector.y * 0.4; 
+                angularVel = -data.vector.x * 0.8;
+                if (!moveTimer) moveTimer = setInterval(publishCmdVel, 100);
+            } else { linearVel = 0; angularVel = 0; }
+        });
         joystick.on('end', () => stopMove());
-        function getRobotIcon(status) { let color, shadow; switch (status) { case -1: color = '#f44336'; shadow = '0 0 8px #f44336'; break; case 0: color = '#ffc107'; shadow = '0 0 8px #ffc107'; break; case 1: color = '#2196f3'; shadow = '0 0 8px #2196f3'; break; default: color = '#4caf50'; shadow = '0 0 8px #4caf50'; break; } return L.divIcon({ className: 'custom-robot-icon', html: '<div style="background-color: ' + color + '; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: ' + shadow + ';"></div>' }); }
-        let markerMission = L.marker([0, 0], { icon: getRobotIcon(-1) }).addTo(mapMission);
-        let markerEditor = L.marker([0, 0], { icon: getRobotIcon(-1) }).addTo(mapEditor);
-        let firstGpsFix = true; let positionHistory = []; let pathLayer = L.layerGroup().addTo(mapMission);
+
+        const robotMarkerStyle = L.divIcon({
+            className: 'custom-robot-icon',
+            html: '<div style="background-color: #4caf50; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 8px #4caf50;"></div>',
+            iconSize: [18, 18], iconAnchor: [9, 9]
+        });
+
+        let markerMission = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapMission);
+        let markerEditor = L.marker([0, 0], { icon: robotMarkerStyle }).addTo(mapEditor);
+        let firstGpsFix = true;
+        
+        let positionHistory = [];
+        let pathLayer = L.layerGroup().addTo(mapMission);
+
         const gpsTopic = new ROSLIB.Topic({ ros: ros, name: '/fix', messageType: 'sensor_msgs/msg/NavSatFix' });
-        gpsTopic.subscribe((msg) => { const lat = msg.latitude; const lon = msg.longitude; const accuracy = msg.position_covariance ? Math.sqrt(msg.position_covariance[0] + msg.position_covariance[4]) : 0; const status = msg.status ? msg.status.status : -1; if (lat && lon && !isNaN(lat) && !isNaN(lon) && lat !== 0) { const newPos = [lat, lon]; markerMission.setLatLng(newPos); markerEditor.setLatLng(newPos); markerMission.setIcon(getRobotIcon(status)); markerEditor.setIcon(getRobotIcon(status)); const gpsStatusEl = document.getElementById('gps-status'); if (gpsStatusEl) { gpsStatusEl.innerText = 'Fix OK (' + lat.toFixed(6) + ', ' + lon.toFixed(6) + ')'; gpsStatusEl.style.color = '#4caf50'; } if (firstGpsFix) { mapMission.setView(newPos, 19); mapEditor.setView(newPos, 19); firstGpsFix = false; } positionHistory.push(newPos); if (positionHistory.length > 1) { pathLayer.clearLayers(); L.polyline(positionHistory, { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(pathLayer); } if (isSurveying && !isPaused) { const lastPt = surveyPoints[surveyPoints.length - 1]; if (!lastPt || mapEditor.distance(lastPt, newPos) > 0.3) { surveyPoints.push(newPos); currentPolyline.setLatLngs(surveyPoints); } } } });
-        function centerMapOnMower() { if (markerMission.getLatLng()) { mapMission.setView(markerMission.getLatLng(), 19); } }
+        
+        gpsTopic.subscribe((msg) => {
+            const lat = msg.latitude;
+            const lon = msg.longitude;
+            const accuracy = msg.position_covariance ? Math.sqrt(msg.position_covariance[0] + msg.position_covariance[4]) : 0;
+            const status = msg.status ? msg.status.status : -1;
+
+            if (lat && lon && !isNaN(lat) && !isNaN(lon) && lat !== 0) {
+                const newPos = [lat, lon];
+                
+                markerMission.setLatLng(newPos);
+                markerEditor.setLatLng(newPos);
+
+                document.getElementById('gps-lat-mission').innerText = lat.toFixed(6);
+                document.getElementById('gps-lon-mission').innerText = lon.toFixed(6);
+                document.getElementById('gps-accuracy-mission').innerText = accuracy.toFixed(2);
+                
+                const gpsFixStatusEl = document.getElementById('gps-fix-status-mission');
+                if (status === -1) {
+                    gpsFixStatusEl.innerText = 'Aucun fix';
+                    gpsFixStatusEl.style.color = 'red';
+                } else {
+                    gpsFixStatusEl.innerText = 'Fix OK';
+                    gpsFixStatusEl.style.color = '#4caf50';
+                }
+
+                const gpsStatusEl = document.getElementById('gps-status');
+                if (gpsStatusEl) {
+                    gpsStatusEl.innerText = `Fix OK (${lat.toFixed(6)}, ${lon.toFixed(6)})`;
+                    gpsStatusEl.style.color = '#4caf50';
+                }
+
+                if (firstGpsFix) {
+                    mapMission.setView(newPos, 19);
+                    mapEditor.setView(newPos, 19);
+                    firstGpsFix = false;
+                }
+
+                positionHistory.push(newPos);
+                if (positionHistory.length > 1) {
+                    pathLayer.clearLayers();
+                    L.polyline(positionHistory, { color: '#4caf50', weight: 3, opacity: 0.8 }).addTo(pathLayer);
+                }
+
+                if (isSurveying && !isPaused) {
+                    const lastPt = surveyPoints[surveyPoints.length - 1];
+                    if (!lastPt || mapEditor.distance(lastPt, newPos) > 0.3) {
+                        surveyPoints.push(newPos);
+                        currentPolyline.setLatLngs(surveyPoints);
+                    }
+                }
+            }
+        });
+
+        function centerMapOnMower() {
+            if (markerMission.getLatLng()) {
+                mapMission.setView(markerMission.getLatLng(), 19);
+            }
+        }
+
         loadZonesFromServer();
     </script>
 </body>
