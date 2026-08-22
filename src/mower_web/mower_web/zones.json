@@ -1,0 +1,65 @@
+[
+  {
+    "id": "zone_1",
+    "name": "Jardin principal",
+    "type": "mowing",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [2.3522, 48.8566],
+          [2.3525, 48.8566],
+          [2.3525, 48.8568],
+          [2.3522, 48.8568],
+          [2.3522, 48.8566]
+        ]
+      ]
+    },
+    "lines": [],
+    "parameters": {
+      "speed": 0.5,
+      "height": 5,
+      "mowingWidth": 0.5,
+      "overlap": 0.1
+    },
+    "selected": false
+  },
+  {
+    "id": "zone_2",
+    "name": "Arbre",
+    "type": "obstacle",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [2.3523, 48.8567],
+          [2.3524, 48.8567],
+          [2.3524, 48.85675],
+          [2.3523, 48.85675],
+          [2.3523, 48.8567]
+        ]
+      ]
+    },
+    "parameters": {
+      "buffer": 0.5
+    },
+    "selected": false
+  },
+  {
+    "id": "corridor_1",
+    "name": "Chemin principal",
+    "type": "corridor",
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [2.3522, 48.8568],
+        [2.3523, 48.8569]
+      ]
+    },
+    "parameters": {
+      "width": 1.5,
+      "speed": 0.3
+    },
+    "selected": false
+  }
+]
