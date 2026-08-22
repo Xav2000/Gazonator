@@ -1,1 +1,32 @@
-# Test
+# ROS 2
+build/
+install/
+log/
+*.pyc
+__pycache__/
+.DS_Store
+
+# Clés et secrets
+*.key
+*.pem
+*.env
+privatekey
+publickey
+centipede_params.yaml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Système
+*.log
+*.tmp
+*.bak
+
+# Données locales (à adapter par utilisateur)
+map_data.json
+mission_plan.json
+settings.json
+tasks.json
+zones.json
