@@ -15,10 +15,8 @@
         nav button.active { color: #4caf50; border-bottom: 3px solid #4caf50; background: #2a2a2a; }
 
         .tab-content { display: none; width: 100%; height: calc(100vh - 50px); position: relative; }
-        #tab1.active { display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 20px; }
-        #tab2.active { display: flex; flex-direction: column; }
-        #tab3.active { display: flex; flex-direction: row; }
-        #tab4.active { display: flex; flex-direction: column; padding: 20px; gap: 15px; }
+        #tab1.active, #tab4.active { display: flex; flex-direction: column; padding: 20px; gap: 20px; }
+        #tab2.active, #tab3.active { display: flex; flex-direction: row; }
 
         .map-frame { width: 100%; height: 100%; z-index: 1; background: #1a1a1a; }
         
@@ -27,23 +25,30 @@
         .sidebar-top { flex: 1; padding: 15px; overflow-y: auto; border-bottom: 1px solid #333; }
         .sidebar-bottom { padding: 15px; background: #181818; }
         
-        .task-item { display: flex; align-items: center; padding: 10px; background: #2a2a2a; border-radius: 5px; margin-bottom: 8px; border: 1px solid #333; }
+        .task-item { display: flex; align-items: center; padding: 8px 10px; background: #2a2a2a; border-radius: 5px; margin-bottom: 8px; border: 1px solid #333; }
         .task-item.active-editing { border-color: #4caf50; background: #333; }
         .task-item input[type="checkbox"] { width: auto; margin-right: 10px; cursor: pointer; }
         .task-name-text { flex: 1; color: #ffffff; font-weight: bold; font-size: 0.95rem; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .task-name-text:hover { color: #4caf50; }
         
-        .btn-action { background: none; border: none; font-size: 1rem; cursor: pointer; margin-left: 8px; opacity: 0.7; }
+        .btn-action { background: none; border: none; font-size: 0.9rem; cursor: pointer; margin-left: 4px; opacity: 0.7; color: #fff; }
         .btn-action:hover { opacity: 1; }
-
         .btn-add-task { padding: 6px 12px; background: #4caf50; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
-        .btn-add-task:hover { background: #45a049; }
 
         .card { background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; }
         .card h3 { color: #4caf50; margin-bottom: 10px; }
 
         label { display: block; margin-top: 10px; font-size: 0.85rem; color: #aaa; }
         input, select { width: 100%; padding: 8px; margin-top: 4px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; }
+
+        .status-badge { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+        .status-green { background-color: #4caf50; box-shadow: 0 0 6px #4caf50; }
+        .status-red { background-color: #f44336; box-shadow: 0 0 6px #f44336; }
+        .status-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; padding: 6px 0; border-bottom: 1px solid #2a2a2a; }
+
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
+        .modal-content { background: #1e1e1e; padding: 20px; border-radius: 8px; border: 1px solid #444; width: 320px; position: relative; }
+        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 1.2rem; cursor: pointer; color: #aaa; }
     </style>
 </head>
 <body>
@@ -55,9 +60,53 @@
         <button onclick="switchTab('tab4', event)">4. Santé</button>
     </nav>
 
-    <div id="tab1" class="tab-content active"><p style="margin-top:20px;">Onglet Pilotage</p></div>
-    <div id="tab2" class="tab-content"><div id="map-mission" class="map-frame"></div></div>
+    <!-- TAB 1: PILOTAGE -->
+    <div id="tab1" class="tab-content active">
+        <p style="margin-top:20px;">Onglet Pilotage (Enregistrement Séquences Dock)</p>
+    </div>
 
+    <!-- TAB 2: MISSION -->
+    <div id="tab2" class="tab-content">
+        <div class="sidebar">
+            <div class="sidebar-top">
+                <div class="sidebar-header">
+                    <h4>Ordre des Zones</h4>
+                    <button class="btn-action" onclick="openDockSettings()" title="Configuration du Dock & Système">⚙️</button>
+                </div>
+                <div id="mission-tasks-list"></div>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Corridors / Chemins</h4>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="toggleCorridorDraw()" id="btn-draw-corridor" style="flex:1; padding:8px; background:#00bcd4; border:none; color:white; font-weight:bold; border-radius:4px; cursor:pointer;">➕ Tracer</button>
+                    <button onclick="toggleCorridorEdit()" id="btn-edit-corridor" style="padding:8px; background:#555; border:none; color:white; font-weight:bold; border-radius:4px; cursor:pointer;">✏️ Éditer</button>
+                    <button onclick="clearAllCorridors()" style="padding:8px; background:#ff5252; border:none; color:white; font-weight:bold; border-radius:4px; cursor:pointer;" title="Effacer tous les corridors">🗑️</button>
+                </div>
+
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Génération Mission</h4>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button onclick="generateMission()" style="padding:10px; background:#e91e63; border:none; color:white; font-weight:bold; border-radius:4px; cursor:pointer;">🚀 Générer / Calculer Ligne</button>
+                    <button onclick="clearMission()" style="padding:8px; background:#555; border:none; color:white; font-weight:bold; border-radius:4px; cursor:pointer;">🗑️ Effacer Lignes Générées</button>
+                    <p style="font-size:0.75rem; color:#aaa; margin-top:5px; line-height:1.4;">
+                        ⚠️ Les corridors doivent obligatoirement entrer dans chaque zone.<br>
+                        Vous pouvez éditer les traits rouges générés à l'intérieur des zones avant d'exécuter.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <h4>Sécurités & Pré-vol</h4>
+                <div class="status-row"><span><span id="badge-rtk" class="status-badge status-red"></span>GPS RTK</span><strong id="val-rtk">NO FIX</strong></div>
+                <div class="status-row"><span><span id="badge-bat" class="status-badge status-red"></span>Batterie</span><strong id="val-bat">-- V</strong></div>
+                
+                <button id="btn-start-mission" disabled onclick="startMission()" style="width:100%; padding: 12px; margin-top: 15px; background: #444; color: #888; border: none; border-radius: 4px; font-size: 1rem; font-weight: bold; cursor: not-allowed;">
+                    🚀 DÉMARRER LA MISSION
+                </button>
+            </div>
+        </div>
+        <div id="map-mission" class="map-frame"></div>
+    </div>
+
+    <!-- TAB 3: TÂCHES -->
     <div id="tab3" class="tab-content">
         <div class="sidebar">
             <div class="sidebar-top">
@@ -69,12 +118,9 @@
             </div>
             <div class="sidebar-bottom">
                 <h4>Réglages de la Zone</h4>
-                <label>Nom de la tâche</label>
-                <input type="text" id="task-name" value="Nouvelle Zone">
-                <label>Nombre de tournières</label>
-                <input type="number" id="param-tours" value="2" min="1" max="5">
-                <label>Largeur de passe / outil (m)</label>
-                <input type="number" id="param-largeur" value="0.4" step="0.05">
+                <label>Nom de la tâche</label><input type="text" id="task-name" value="Nouvelle Zone">
+                <label>Tournières</label><input type="number" id="param-tours" value="2" min="1" max="5">
+                <label>Largeur passe (m)</label><input type="number" id="param-largeur" value="0.4" step="0.05">
                 
                 <div style="display:flex; gap:10px; margin-top:15px;">
                     <button onclick="generateTrajectory()" style="flex:1; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Calculer</button>
@@ -85,12 +131,24 @@
         <div id="map-editor" class="map-frame"></div>
     </div>
 
+    <!-- TAB 4: SANTÉ -->
     <div id="tab4" class="tab-content">
         <div class="card">
-            <h3>Raspberry Pi</h3>
-            <p>CPU : <span id="sys-cpu">-</span> % (<span id="sys-temp">-</span> °C)</p>
-            <p>RAM : <span id="sys-ram">-</span> MB / <span id="sys-ram-total">-</span> MB</p>
-            <p>SD Libre : <span id="sys-sd">-</span> GB</p>
+            <h3>Système</h3>
+            <p>CPU : <span id="sys-cpu">-</span> %</p>
+            <p>RAM : <span id="sys-ram">-</span> MB</p>
+        </div>
+    </div>
+
+    <!-- MODAL DOCK -->
+    <div id="dock-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeDockSettings()">&times;</span>
+            <h3 style="color:#4caf50; margin-bottom:15px;">Réglages du Dock</h3>
+            <button onclick="enableDockPlacement()" style="width:100%; padding:8px; background:#2196f3; border:none; color:white; border-radius:4px; font-weight:bold; cursor:pointer;">📍 Placer le Dock sur la Carte</button>
+            <label>Orientation du Dock (°)</label>
+            <input type="number" id="dock-heading" value="0" min="0" max="359" onchange="updateDockHeading(this.value)">
+            <button onclick="closeDockSettings()" style="width:100%; margin-top:15px; padding:8px; background:#4caf50; border:none; color:white; border-radius:4px; font-weight:bold; cursor:pointer;">Valider</button>
         </div>
     </div>
 
@@ -103,6 +161,7 @@
             document.getElementById(tabId).classList.add('active');
             evt.currentTarget.classList.add('active');
             setTimeout(() => { mapMission.invalidateSize(); mapEditor.invalidateSize(); }, 100);
+            if(tabId === 'tab2') renderMissionMap();
         }
 
         const mapOptions = { maxZoom: 22, maxNativeZoom: 19 };
@@ -110,35 +169,513 @@
 
         const mapMission = L.map('map-mission', mapOptions).setView([47.0, 5.0], 18);
         orthoLayer().addTo(mapMission);
-
         const mapEditor = L.map('map-editor', mapOptions).setView([47.0, 5.0], 18);
         orthoLayer().addTo(mapEditor);
 
         let trajectoryLayerGroup = L.layerGroup().addTo(mapEditor);
+        let missionLayerGroup = L.layerGroup().addTo(mapMission);
+        
+        let missionLinksGroup = L.featureGroup().addTo(mapMission); // Traits rouges éditables (entrée/sortie)
+        let globalRouteLayer = L.layerGroup().addTo(mapMission);    // Trajet global calculé
+
         let currentPolygon = null;
         let exclusionPolygons = [];
         let currentTaskId = null;
         let loadedWaypoints = null;
+        let dockMarker = null, dockPosition = null, dockHeading = 0;
+        let corridorLayers = [], isDrawingCorridor = false, isEditingCorridors = false;
+        let activeTaskList = [];
 
         mapEditor.pm.setGlobalOptions({ snapDistance: 3, allowSelfIntersection: false });
-        mapEditor.pm.addControls({
-            position: 'topleft',
-            drawPolygon: true, editMode: true, dragMode: true, removalMode: true,
-            drawCircle: false, drawPolyline: false, drawRectangle: false, drawCircleMarker: false, drawText: false, cutPolygon: false
-        });
+        mapEditor.pm.addControls({ position: 'topleft', drawPolygon: true, editMode: true, removalMode: true, drawCircle: false, drawPolyline: false, drawRectangle: false, drawCircleMarker: false, drawText: false });
+        mapMission.pm.setGlobalOptions({ snapDistance: 5 });
 
         mapEditor.on('pm:create', (e) => {
             if (e.shape !== 'Polygon') return;
+            if (!currentPolygon) { currentPolygon = e.layer; currentPolygon.setStyle({ color: '#3388ff' }); }
+            else { e.layer.setStyle({ color: '#ff5252' }); exclusionPolygons.push(e.layer); }
+        });
+
+        // --- HELPER UNIFORMISATION COORDONNEES (Fix bugs lat/lng vs array) ---
+        function toLatLng(p) {
+            if (!p) return null;
+            if (Array.isArray(p)) return L.latLng(p[0], p[1]);
+            if (p.lat !== undefined && p.lng !== undefined) return L.latLng(p.lat, p.lng);
+            return null;
+        }
+
+        function ptId(p) {
+            const pt = toLatLng(p);
+            if (!pt) return '0,0';
+            return pt.lat.toFixed(6) + ',' + pt.lng.toFixed(6);
+        }
+
+        function isPointInPolygon(point, polygonCoords) {
+            const pt = toLatLng(point);
+            if (!pt || !polygonCoords || polygonCoords.length === 0) return false;
             
-            if (!currentPolygon) {
-                currentPolygon = e.layer;
-                currentPolygon.setStyle({ color: '#3388ff' });
+            const vs = polygonCoords.map(c => toLatLng(c));
+            let x = pt.lat, y = pt.lng, inside = false;
+            for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                let xi = vs[i].lat, yi = vs[i].lng;
+                let xj = vs[j].lat, yj = vs[j].lng;
+                let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        // --- GESTION DU DOCK ---
+        function openDockSettings() { document.getElementById('dock-modal').style.display = 'flex'; }
+        function closeDockSettings() { document.getElementById('dock-modal').style.display = 'none'; }
+        function enableDockPlacement() {
+            closeDockSettings();
+            alert("Cliquez sur la carte (Mission) pour positionner le Dock.");
+            mapMission.once('click', (e) => { 
+                dockPosition = L.latLng(e.latlng.lat, e.latlng.lng); 
+                drawDock(); 
+                openDockSettings(); 
+            });
+        }
+        function drawDock() {
+            if(!dockPosition) return;
+            const pt = toLatLng(dockPosition);
+            if(dockMarker) mapMission.removeLayer(dockMarker);
+            dockMarker = L.marker(pt, {
+                icon: L.divIcon({ className: 'dock-icon', html: `<div style="background:#ff9800; border:2px solid white; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; transform: rotate(${dockHeading}deg);">⚡</div>`, iconSize: [28, 28] })
+            }).addTo(mapMission);
+        }
+        function updateDockHeading(val) { dockHeading = parseInt(val) || 0; drawDock(); }
+
+        // --- CORRIDORS ---
+        function toggleCorridorDraw() {
+            isDrawingCorridor = !isDrawingCorridor;
+            const btn = document.getElementById('btn-draw-corridor');
+            if(isDrawingCorridor) {
+                if(isEditingCorridors) toggleCorridorEdit();
+                btn.style.background = '#ff5252'; btn.innerText = '❌ Annuler';
+                mapMission.pm.enableDraw('Line', { finishOn: 'dblclick' });
             } else {
-                e.layer.setStyle({ color: '#ff5252' });
-                exclusionPolygons.push(e.layer);
+                btn.style.background = '#00bcd4'; btn.innerText = '➕ Tracer';
+                mapMission.pm.disableDraw();
+            }
+        }
+        function toggleCorridorEdit() {
+            isEditingCorridors = !isEditingCorridors;
+            const btn = document.getElementById('btn-edit-corridor');
+            if(isEditingCorridors) {
+                if(isDrawingCorridor) toggleCorridorDraw();
+                btn.style.background = '#ff9800';
+                corridorLayers.forEach(layer => layer.pm.enable({ allowSelfIntersection: false }));
+            } else {
+                btn.style.background = '#555';
+                corridorLayers.forEach(layer => layer.pm.disable());
+            }
+        }
+        function clearAllCorridors() {
+            if(!confirm("Effacer tous les corridors ?")) return;
+            corridorLayers.forEach(l => mapMission.removeLayer(l));
+            corridorLayers = [];
+            clearMission();
+        }
+        mapMission.on('pm:create', (e) => {
+            if (e.shape === 'Line') {
+                e.layer.setStyle({ color: '#00bcd4', weight: 6, opacity: 0.8 });
+                corridorLayers.push(e.layer);
+                toggleCorridorDraw();
             }
         });
 
+        // --- EFFACER LA MISSION ---
+        function clearMission() {
+            missionLinksGroup.clearLayers();
+            globalRouteLayer.clearLayers();
+        }
+
+        // --- GENERATION ET VERIFICATION DE MISSION SECTEUR PAR SECTEUR ---
+        function generateMission() {
+            if (!dockPosition) {
+                alert("⚠️ Erreur : Le Dock de recharge n'a pas été placé ! Cliquez sur le bouton ⚙️ pour le positionner.");
+                return;
+            }
+            if (corridorLayers.length === 0) {
+                alert("⚠️ Erreur Sécurité : Aucun corridor n'est tracé. Le robot ne peut circuler QUE sur des corridors.");
+                return;
+            }
+            if (activeTaskList.length === 0) {
+                alert("⚠️ Erreur : Aucune zone de tonte n'est sélectionnée.");
+                return;
+            }
+
+            globalRouteLayer.clearLayers();
+
+            const dockPt = toLatLng(dockPosition);
+
+            // Extract all points from all corridors
+            let allCorridorPts = [];
+            let corridorEndpoints = [];
+            corridorLayers.forEach(layer => {
+                let pts = layer.getLatLngs().map(p => toLatLng(p));
+                allCorridorPts.push(...pts);
+                if(pts.length > 0) {
+                    corridorEndpoints.push(pts[0]);
+                    corridorEndpoints.push(pts[pts.length - 1]);
+                }
+            });
+
+            // --- ETAPE 1 : VERIFICATION DE SECURITE OBLIGATOIRE ---
+            // Chaque zone DOIT contenir au moins un point de corridor !
+            let zoneCorridorMap = {}; // taskId -> points de corridor à l'intérieur
+
+            for (let task of activeTaskList) {
+                if (!task.polygon || task.polygon.length === 0) {
+                    alert(`⚠️ Erreur : La zone "${task.name}" n'a pas de polygone valide défini.`);
+                    return;
+                }
+
+                // Trouver tous les points de corridors situés DANS la zone
+                let ptsInside = allCorridorPts.filter(cp => isPointInPolygon(cp, task.polygon));
+
+                if (ptsInside.length === 0) {
+                    alert(`🚫 SÉCURITÉ : La zone "${task.name}" N'EST PAS RELIÉE PAR UN CORRIDOR !\n\nUn corridor doit obligatoirement s'étendre et rentrer à l'intérieur du contour de la zone pour autoriser le passage du robot.`);
+                    return;
+                }
+                zoneCorridorMap[task.id] = ptsInside;
+            }
+
+            // --- ETAPE 2 : TRAITS ROUGES EDITABLES (Uniquement à l'intérieur des zones) ---
+            // S'ils ne sont pas déjà tracés par l'utilisateur, on les génère
+            if (missionLinksGroup.getLayers().length === 0) {
+                activeTaskList.forEach(task => {
+                    if (!task.waypoints || task.waypoints.length === 0) return;
+
+                    let insidePts = zoneCorridorMap[task.id];
+
+                    // Récupérer le point de DEBUT et de FIN de la trajectoire de tonte
+                    let allTaskPts = [];
+                    task.waypoints.forEach(wp => {
+                        if (wp.points) wp.points.forEach(p => allTaskPts.push(toLatLng(p)));
+                        if (wp.lines) wp.lines.forEach(l => l.forEach(p => allTaskPts.push(toLatLng(p))));
+                    });
+                    if (allTaskPts.length === 0) return;
+
+                    let startMowPt = allTaskPts[0];
+                    let endMowPt = allTaskPts[allTaskPts.length - 1];
+
+                    // Trouver le point de corridor dans la zone le plus proche du début de tonte
+                    let bestEntryCorridor = insidePts[0], minD1 = Infinity;
+                    insidePts.forEach(cp => {
+                        let d = mapMission.distance(cp, startMowPt);
+                        if (d < minD1) { minD1 = d; bestEntryCorridor = cp; }
+                    });
+
+                    // Trouver le point de corridor dans la zone le plus proche de la fin de tonte
+                    let bestExitCorridor = insidePts[0], minD2 = Infinity;
+                    insidePts.forEach(cp => {
+                        let d = mapMission.distance(cp, endMowPt);
+                        if (d < minD2) { minD2 = d; bestExitCorridor = cp; }
+                    });
+
+                    // Trait rouge d'entrée : Point de corridor dans la zone -> Premier point de tonte
+                    let entryLine = L.polyline([bestEntryCorridor, startMowPt], { color: '#f44336', weight: 4, dashArray: '6, 6' }).addTo(missionLinksGroup);
+                    entryLine.pm.enable({ allowSelfIntersection: false });
+                    entryLine.taskId = task.id;
+                    entryLine.linkType = 'entry';
+
+                    // Trait rouge de sortie : Dernier point de tonte -> Point de corridor dans la zone
+                    let exitLine = L.polyline([endMowPt, bestExitCorridor], { color: '#f44336', weight: 4, dashArray: '6, 6' }).addTo(missionLinksGroup);
+                    exitLine.pm.enable({ allowSelfIntersection: false });
+                    exitLine.taskId = task.id;
+                    exitLine.linkType = 'exit';
+                });
+            }
+
+            // --- ETAPE 3 : CONSTRUCTION DU GRAPHE DE NAVIGATION SUR LES CORRIDORS ---
+            let nodes = {}; // id -> L.latLng
+            let edges = {}; // id -> { neighborId: distance }
+
+            function addNode(p) {
+                const pt = toLatLng(p);
+                const id = ptId(pt);
+                if (!nodes[id]) { nodes[id] = pt; edges[id] = {}; }
+                return id;
+            }
+
+            function addEdge(p1, p2) {
+                const pt1 = toLatLng(p1), pt2 = toLatLng(p2);
+                if (!pt1 || !pt2) return;
+                const id1 = addNode(pt1), id2 = addNode(pt2);
+                if (id1 === id2) return;
+                const w = mapMission.distance(pt1, pt2);
+                edges[id1][id2] = w;
+                edges[id2][id1] = w;
+            }
+
+            // 1. Segments de corridors
+            corridorLayers.forEach(layer => {
+                let pts = layer.getLatLngs().map(p => toLatLng(p));
+                for (let i = 0; i < pts.length - 1; i++) {
+                    addEdge(pts[i], pts[i+1]);
+                }
+            });
+
+            // 2. Croisements entre corridors (< 1.50m)
+            corridorEndpoints.forEach(ep => {
+                allCorridorPts.forEach(cp => {
+                    if (ep !== cp) {
+                        let dist = mapMission.distance(ep, cp);
+                        if (dist <= 1.5) {
+                            addEdge(ep, cp);
+                            L.circleMarker(ep, { radius: 4, color: '#00e5ff', fillColor: '#00e5ff', fillOpacity: 0.9 }).addTo(globalRouteLayer);
+                        }
+                    }
+                });
+            });
+
+            // 3. Liaison du Dock au corridor le plus proche (doit être < 15m)
+            let nearestDockCp = allCorridorPts[0], minDockDist = Infinity;
+            allCorridorPts.forEach(cp => {
+                let d = mapMission.distance(dockPt, cp);
+                if (d < minDockDist) { minDockDist = d; nearestDockCp = cp; }
+            });
+
+            if (minDockDist > 15.0) {
+                alert(`⚠️ Erreur : Le Dock est trop éloigné du réseau de corridors (${minDockDist.toFixed(1)} m). Rapprochez le corridor du Dock.`);
+                return;
+            }
+            addEdge(dockPt, nearestDockCp);
+
+            // Algorithme Dijkstra pour trouver le plus court chemin sur les corridors
+            function findShortestCorridorPath(startPoint, endPoint) {
+                const startId = ptId(startPoint);
+                const endId = ptId(endPoint);
+
+                if (!nodes[startId] || !nodes[endId]) return null;
+
+                let distances = {};
+                let previous = {};
+                let unvisited = new Set();
+
+                for (let id in nodes) {
+                    distances[id] = Infinity;
+                    previous[id] = null;
+                    unvisited.add(id);
+                }
+                distances[startId] = 0;
+
+                while (unvisited.size > 0) {
+                    let currentId = null;
+                    let smallestDist = Infinity;
+                    for (let id of unvisited) {
+                        if (distances[id] < smallestDist) {
+                            smallestDist = distances[id];
+                            currentId = id;
+                        }
+                    }
+
+                    if (currentId === null || smallestDist === Infinity) break;
+                    if (currentId === endId) break;
+
+                    unvisited.delete(currentId);
+
+                    for (let neighborId in edges[currentId]) {
+                        if (!unvisited.has(neighborId)) continue;
+                        let alt = distances[currentId] + edges[currentId][neighborId];
+                        if (alt < distances[neighborId]) {
+                            distances[neighborId] = alt;
+                            previous[neighborId] = currentId;
+                        }
+                    }
+                }
+
+                if (distances[endId] === Infinity) return null;
+
+                let path = [];
+                let curr = endId;
+                while (curr !== null) {
+                    path.push(nodes[curr]);
+                    curr = previous[curr];
+                }
+                return path.reverse();
+            }
+
+            // --- ETAPE 4 : ASSEMBLAGE DE LA LIGNE DE MISSION COMPLETE ---
+            let fullMissionPath = [];
+            let currentRobotPos = dockPt;
+
+            for (let i = 0; i < activeTaskList.length; i++) {
+                let task = activeTaskList[i];
+
+                // Récupérer les traits rouges éditables attribués à cette zone
+                let taskLinks = missionLinksGroup.getLayers().filter(l => l.taskId === task.id);
+                let entryLink = taskLinks.find(l => l.linkType === 'entry');
+                let exitLink = taskLinks.find(l => l.linkType === 'exit');
+
+                let entryPts = entryLink ? entryLink.getLatLngs().map(p => toLatLng(p)) : [];
+                let exitPts = exitLink ? exitLink.getLatLngs().map(p => toLatLng(p)) : [];
+
+                if (entryPts.length === 0 || exitPts.length === 0) {
+                    alert(`⚠️ Erreur : Impossible de lire la liaison d'accès pour la zone "${task.name}".`);
+                    return;
+                }
+
+                let corridorTouchPoint = entryPts[0]; // Point de départ du trait rouge (corridor)
+                let mowStartPoint = entryPts[entryPts.length - 1]; // Fin du trait rouge (début tonte)
+                
+                let mowEndPoint = exitPts[0]; // Début du trait rouge de sortie (fin tonte)
+                let corridorExitTouchPoint = exitPts[exitPts.length - 1]; // Fin du trait rouge de sortie (corridor)
+
+                // 1. Calculer trajet corridor : Position Actuelle -> Entrée Zone (corridorTouchPoint)
+                let corridorPathToZone = findShortestCorridorPath(currentRobotPos, corridorTouchPoint);
+                if (!corridorPathToZone) {
+                    alert(`🚫 SÉCURITÉ : Impossible d'atteindre la zone "${task.name}" via les corridors ! Vérifiez que les corridors sont reliés entre eux.`);
+                    return;
+                }
+
+                // Ajouter le trajet corridor au parcours global
+                fullMissionPath.push(...corridorPathToZone);
+
+                // 2. Ajouter le trait rouge d'entrée dans la zone
+                fullMissionPath.push(...entryPts);
+
+                // 3. Trajectoire de tonte à l'intérieur de la zone
+                if (task.waypoints) {
+                    task.waypoints.forEach(wp => {
+                        if (wp.points) wp.points.forEach(p => fullMissionPath.push(toLatLng(p)));
+                        if (wp.lines) wp.lines.forEach(l => l.forEach(p => fullMissionPath.push(toLatLng(p))));
+                    });
+                }
+
+                // 4. Ajouter le trait rouge de sortie de la zone
+                fullMissionPath.push(...exitPts);
+
+                // Mettre à jour la position actuelle du robot
+                currentRobotPos = corridorExitTouchPoint;
+            }
+
+            // 5. Trajet retour corridor : Dernière Zone -> Dock
+            let corridorPathToDock = findShortestCorridorPath(currentRobotPos, dockPt);
+            if (!corridorPathToDock) {
+                alert("🚫 SÉCURITÉ : Impossible d'établir le chemin de RETOUR au Dock via les corridors !");
+                return;
+            }
+            fullMissionPath.push(...corridorPathToDock);
+
+            // --- ETAPE 5 : AFFICHAGE SUR LA CARTE ---
+            L.polyline(fullMissionPath, { color: '#e91e63', weight: 6, opacity: 0.85, dashArray: '10, 8' }).addTo(globalRouteLayer);
+
+            alert("✅ Mission générée avec succès ! Le trajet respecte strictement les corridors.");
+        }
+
+        // --- MISE A JOUR CARTE MISSION ---
+        async function renderMissionMap() {
+            missionLayerGroup.clearLayers();
+            drawDock();
+            corridorLayers.forEach(layer => layer.addTo(missionLayerGroup));
+
+            try {
+                const res = await fetch('/api/tasks');
+                const tasks = await res.json();
+                
+                if(activeTaskList.length === 0) {
+                    activeTaskList = tasks.filter(t => t.enabled);
+                } else {
+                    const activeIds = tasks.filter(t => t.enabled).map(t => t.id);
+                    activeTaskList = activeTaskList.filter(t => activeIds.includes(t.id));
+                    tasks.filter(t => t.enabled).forEach(t => {
+                        if(!activeTaskList.find(ex => ex.id === t.id)) activeTaskList.push(t);
+                    });
+                }
+
+                const container = document.getElementById('mission-tasks-list');
+                container.innerHTML = activeTaskList.length === 0 ? '<p style="color:#888;">Aucune zone sélectionnée.</p>' : '';
+                
+                activeTaskList.forEach((t, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'task-item';
+                    div.innerHTML = `
+                        <span style="font-weight:bold; color:#4caf50; margin-right:8px;">${index+1}.</span>
+                        <span class="task-name-text">${t.name}</span>
+                        <button class="btn-action" onclick="moveTaskOrder(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.2"' : ''}>⬆️</button>
+                        <button class="btn-action" onclick="moveTaskOrder(${index}, 1)" ${index === activeTaskList.length - 1 ? 'disabled style="opacity:0.2"' : ''}>⬇️</button>
+                    `;
+                    container.appendChild(div);
+
+                    if(t.polygon) L.polygon(t.polygon, { color: '#4caf50', weight: 2, fillOpacity: 0.15 }).addTo(missionLayerGroup);
+                    if(t.waypoints) {
+                        t.waypoints.forEach(item => {
+                            if (item.type === 'headland' || item.type === 'exclusion_headland') {
+                                L.polyline(item.points, { color: '#ff9800', weight: 2, dashArray: '4, 4' }).addTo(missionLayerGroup);
+                            } else if (item.type === 'swaths') {
+                                item.lines.forEach(line => L.polyline(line, { color: '#2196f3', weight: 2 }).addTo(missionLayerGroup));
+                            }
+                        });
+                    }
+                });
+
+                if (missionLayerGroup.getLayers().length > 0) {
+                    mapMission.fitBounds(L.featureGroup(missionLayerGroup.getLayers()).getBounds(), { padding: [50, 50] });
+                }
+            } catch(err) {
+                console.error("Erreur chargement tâches mission:", err);
+            }
+        }
+
+        function moveTaskOrder(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= activeTaskList.length) return;
+            const temp = activeTaskList[index];
+            activeTaskList[index] = activeTaskList[newIndex];
+            activeTaskList[newIndex] = temp;
+            renderMissionMap();
+            clearMission();
+        }
+
+        // --- SAFETY MATRIX & START MISSION ---
+        function updateSafetyStatus(rtkFix, batteryVoltage, lidarOk) {
+            const badgeRtk = document.getElementById('badge-rtk');
+            const valRtk = document.getElementById('val-rtk');
+            const badgeBat = document.getElementById('badge-bat');
+            const valBat = document.getElementById('val-bat');
+            const btnStart = document.getElementById('btn-start-mission');
+
+            let isReady = true;
+
+            if (rtkFix === 'FIX_CENTIMETRIC') {
+                badgeRtk.className = 'status-badge status-green';
+                valRtk.innerText = 'RTK FIX';
+            } else {
+                badgeRtk.className = 'status-badge status-red';
+                valRtk.innerText = rtkFix;
+                isReady = false;
+            }
+
+            valBat.innerText = batteryVoltage + ' V';
+            if (batteryVoltage >= 24.5) {
+                badgeBat.className = 'status-badge status-green';
+            } else {
+                badgeBat.className = 'status-badge status-red';
+                isReady = false;
+            }
+
+            if (isReady) {
+                btnStart.disabled = false;
+                btnStart.style.background = '#4caf50';
+                btnStart.style.color = '#fff';
+                btnStart.style.cursor = 'pointer';
+            } else {
+                btnStart.disabled = true;
+                btnStart.style.background = '#444';
+                btnStart.style.color = '#888';
+                btnStart.style.cursor = 'not-allowed';
+            }
+        }
+
+        function startMission() {
+            alert("🚀 Mission Démarrée ! Ordres transmis au contrôleur ROS 2.");
+        }
+
+        // --- ONGLET 3: LOGIQUE EDITEUR DE TACHES ---
         function createNewTask() {
             currentTaskId = null;
             if (currentPolygon) mapEditor.removeLayer(currentPolygon);
@@ -224,23 +761,27 @@
         }
 
         async function loadTasksList() {
-            const res = await fetch('/api/tasks');
-            const tasks = await res.json();
-            const container = document.getElementById('tasks-list');
-            container.innerHTML = '';
+            try {
+                const res = await fetch('/api/tasks');
+                const tasks = await res.json();
+                const container = document.getElementById('tasks-list');
+                container.innerHTML = '';
 
-            tasks.forEach(task => {
-                const div = document.createElement('div');
-                div.className = 'task-item' + (task.id === currentTaskId ? ' active-editing' : '');
-                
-                div.innerHTML = `
-                    <input type="checkbox" ${task.enabled ? 'checked' : ''} onchange="toggleTaskEnabled('${task.id}', this.checked)" title="Activer pour la mission">
-                    <span class="task-name-text" onclick="focusAndLoadTask('${task.id}')">${task.name}</span>
-                    <button class="btn-action" onclick="renameTask('${task.id}', '${task.name}')" title="Renommer">✏️</button>
-                    <button class="btn-action" onclick="deleteTask('${task.id}')" title="Supprimer">🗑️</button>
-                `;
-                container.appendChild(div);
-            });
+                tasks.forEach(task => {
+                    const div = document.createElement('div');
+                    div.className = 'task-item' + (task.id === currentTaskId ? ' active-editing' : '');
+                    
+                    div.innerHTML = `
+                        <input type="checkbox" ${task.enabled ? 'checked' : ''} onchange="toggleTaskEnabled('${task.id}', this.checked)" title="Activer pour la mission">
+                        <span class="task-name-text" onclick="focusAndLoadTask('${task.id}')">${task.name}</span>
+                        <button class="btn-action" onclick="renameTask('${task.id}', '${task.name}')" title="Renommer">✏️</button>
+                        <button class="btn-action" onclick="deleteTask('${task.id}')" title="Supprimer">🗑️</button>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch(e) {
+                console.error("Erreur chargement liste des tâches:", e);
+            }
         }
 
         async function focusAndLoadTask(taskId) {
@@ -274,7 +815,6 @@
             }
 
             mapEditor.fitBounds(currentPolygon.getBounds(), { padding: [30, 30] });
-
             loadTasksList();
         }
 
@@ -321,6 +861,11 @@
                 loadTasksList();
             }
         }
+
+        // Simu Hardware Status
+        setTimeout(() => {
+            updateSafetyStatus('FIX_CENTIMETRIC', 25.2, true);
+        }, 1000);
 
         loadTasksList();
     </script>
