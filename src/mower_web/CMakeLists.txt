@@ -1,14 +1,11 @@
 cmake_minimum_required(VERSION 3.8)
 project(mower_web)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
-# find dependencies
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY mower_web
+install(DIRECTORY
+  launch
+  mower_web
   DESTINATION share/${PROJECT_NAME}
 )
 

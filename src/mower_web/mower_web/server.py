@@ -1,89 +1,87 @@
+#!/usr/bin/env python3
 import os
+import sys
 import json
 import psutil
+from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
-from mower_web.path_planner import generate_coverage_path
+from flask_cors import CORS
 
-DATA_DIR = os.path.expanduser('~/mower_ws/src/mower_web/data')
-ZONES_FILE = os.path.join(DATA_DIR, 'zones.geojson')
+sys.path.append(str(Path(__file__).parent.resolve()))
+from path_generator import PathGenerator
 
-app = Flask(__name__, static_folder='static', static_url_path='')
+app = Flask(__name__, static_folder='static')
+CORS(app)
+
+STORAGE_DIR = os.path.expanduser('~/mower_ws/src/mower_web/mower_web/storage')
+os.makedirs(STORAGE_DIR, exist_ok=True)
 
 @app.route('/')
-def serve_index():
-    return send_from_directory(app.static_folder, 'index.html')
+def index():
+    return send_from_directory('static', 'index.html')
 
-@app.route('/api/zones', methods=['GET'])
-def get_zones():
-    if not os.path.exists(ZONES_FILE):
-        return jsonify({"type": "FeatureCollection", "features": []})
-    try:
-        with open(ZONES_FILE, 'r') as f:
-            return jsonify(json.load(f))
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/zones', methods=['POST'])
-def save_zones():
-    try:
-        data = request.json
-        os.makedirs(DATA_DIR, exist_ok=True)
-        with open(ZONES_FILE, 'w') as f:
-            json.dump(data, f, indent=2)
-        return jsonify({"status": "ok"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/generate_path', methods=['POST'])
-def api_generate_path():
-    data = request.json or {}
-    turn_count = int(data.get('turn_count', 2))
-    cut_width = float(data.get('cut_width', 0.4))
-    overlap = float(data.get('overlap', 0.05))
-    angle = data.get('angle', 0)
-    ref_edge = data.get('ref_edge', None)
-
-    geojson = generate_coverage_path(
-        turn_count=turn_count,
-        cut_width=cut_width,
-        overlap=overlap,
-        angle_deg=angle,
-        ref_edge=ref_edge
-    )
-    return jsonify(geojson)
+@app.route('/<path:path>')
+def static_proxy(path):
+    return send_from_directory('static', path)
 
 @app.route('/api/system', methods=['GET'])
-def get_system_metrics():
+def get_system_status():
+    temp = 0.0
     try:
-        cpu_usage = psutil.cpu_percent(interval=None)
-        
-        # Température CPU sur Raspberry Pi
-        cpu_temp = 0.0
-        try:
-            with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
-                cpu_temp = round(float(f.read().strip()) / 1000.0, 1)
-        except Exception:
-            pass
+        with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
+            temp = float(f.read().strip()) / 1000.0
+    except:
+        pass
+    disk = psutil.disk_usage('/')
+    memory = psutil.virtual_memory()
+    return jsonify({
+        'cpu_usage': psutil.cpu_percent(interval=None),
+        'cpu_temp': round(temp, 1),
+        'ram_usage_mb': round(memory.used / (1024 * 1024), 1),
+        'ram_total_mb': round(memory.total / (1024 * 1024), 1),
+        'disk_free_gb': round(disk.free / (1024**3), 1)
+    })
 
-        ram = psutil.virtual_memory()
-        ram_usage_mb = round((ram.total - ram.available) / (1024 * 1024), 1)
-        ram_total_mb = round(ram.total / (1024 * 1024), 1)
-
-        disk = psutil.disk_usage('/')
-        disk_free_gb = round(disk.free / (1024 * 1024 * 1024), 1)
-
-        return jsonify({
-            "cpu_usage": cpu_usage,
-            "cpu_temp": cpu_temp,
-            "ram_usage_mb": ram_usage_mb,
-            "ram_total_mb": ram_total_mb,
-            "disk_free_gb": disk_free_gb
-        })
+@app.route('/api/generate_path', methods=['POST'])
+def generate_path():
+    data = request.json
+    try:
+        generator = PathGenerator(
+            zone_latlng=data['polygon'],
+            exclusions_latlng=data.get('exclusions', []),
+            num_tours=data['tours'],
+            width=data['largeur']
+        )
+        result = generator.generate()
+        return jsonify({'status': 'success', 'waypoints': result})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 
-def main():
-    app.run(host='0.0.0.0', port=5000, debug=False)
+@app.route('/api/tasks', methods=['GET'])
+def list_tasks():
+    tasks = []
+    for f in os.listdir(STORAGE_DIR):
+        if f.endswith('.json'):
+            with open(os.path.join(STORAGE_DIR, f), 'r') as file:
+                tasks.append(json.load(file))
+    return jsonify(tasks)
+
+@app.route('/api/tasks/<task_id>', methods=['POST'])
+def save_task(task_id):
+    data = request.json
+    data['id'] = task_id
+    file_path = os.path.join(STORAGE_DIR, f"{task_id}.json")
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=2)
+    return jsonify({'status': 'success', 'task_id': task_id})
+
+@app.route('/api/tasks/<task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    file_path = os.path.join(STORAGE_DIR, f"{task_id}.json")
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return jsonify({'status': 'deleted'})
+    return jsonify({'status': 'not_found'}), 404
 
 if __name__ == '__main__':
-    main()
+    app.run(host='0.0.0.0', port=5000, debug=False)

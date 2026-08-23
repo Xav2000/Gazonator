@@ -2,19 +2,14 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>mower_web</name>
-  <version>1.0.0</version>
-  <description>Web interface for the autonomous mower (Flask + rosbridge)</description>
-  <maintainer email="xavier.rossignol@free.fr">Xavier Rossignol</maintainer>
-  <license>Apache-2.0</license>
+  <version>0.0.1</version>
+  <description>Interface Web et serveur pour Gazonator</description>
+  <maintainer email="xav2000@todo.todo">xav2000</maintainer>
+  <license>TODO</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <exec_depend>flask</exec_depend>
   <exec_depend>rosbridge_server</exec_depend>
-  <exec_depend>rclpy</exec_depend>
-
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
